@@ -58,8 +58,8 @@ See [docs/architecture.md](docs/architecture.md) for details.
 ## Roadmap
 
 - **Batch 0** — repo scaffold, solution, docs ✅
-- **Batch 1** — core domain models + tests ✅ *(this batch)*
-- **Batch 2** — transfer manifest / checksum logic + tests
+- **Batch 1** — core domain models + tests ✅
+- **Batch 2** — transfer manifest / checksum logic + tests ✅ *(this batch)*
 - **Batch 3** — local loopback transfer prototype
 - **Batch 4** — minimal Avalonia UI shell
 - **Batch 5** — LAN discovery / manual IP fallback

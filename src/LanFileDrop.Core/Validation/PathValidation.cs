@@ -27,7 +27,7 @@ public static class PathValidation
             throw new ArgumentException("Relative path must not be empty when provided.", paramName);
         }
 
-        if (Path.IsPathRooted(relativePath))
+        if (IsRooted(relativePath))
         {
             throw new ArgumentException("Relative path must not be rooted/absolute.", paramName);
         }
@@ -38,5 +38,17 @@ public static class PathValidation
         {
             throw new ArgumentException("Relative path must not contain '..' segments.", paramName);
         }
+    }
+
+    // Deliberately does not use Path.IsPathRooted: its rooted/UNC detection depends on the
+    // host OS, and manifests must be rejected the same way regardless of where this runs.
+    private static bool IsRooted(string path)
+    {
+        if (path.StartsWith('/') || path.StartsWith('\\'))
+        {
+            return true;
+        }
+
+        return path.Length >= 2 && char.IsAsciiLetter(path[0]) && path[1] == ':';
     }
 }
