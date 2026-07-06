@@ -43,7 +43,8 @@ The Avalonia desktop shell:
 - File picker, transfer progress, and the mandatory receiver-confirmation dialog
 - Wires Core and Networking together
 - Contains no business logic of its own — it orchestrates calls into Core and Networking
-- Displays manual peer validation state; it does not currently invoke the Networking probe
+- Displays manual peer validation state and can invoke the bounded Networking
+  probe from a stored validated endpoint; no manual peer transfer flow exists
 
 ### Tests
 
@@ -59,10 +60,13 @@ Keeping Core free of networking and UI concerns means the transfer/integrity log
 ## Manual Peer Boundary
 
 Core validates `ManualPeerEndpoint`, the App displays the validation result, and
-Networking can now perform a bounded probe from a validated endpoint. The App
-does not invoke that probe yet, and no manual peer transfer flow is implemented.
-Future networking implementation must continue to accept a validated endpoint
-value or equivalent contract object, not raw text from the UI.
+Networking can perform a bounded probe from a validated endpoint. The App can
+invoke that probe only from an explicit user click, using the stored validated
+`ManualPeerEndpoint` rather than raw UI text. The probe sends no files, starts
+no transfer, performs no receiver confirmation, and no manual peer transfer flow
+is implemented. Future networking implementation must continue to accept a
+validated endpoint value or equivalent contract object, not raw text from the
+UI.
 
 See [manual-peer-connection-plan.md](manual-peer-connection-plan.md) for the
-planned safety contract before manual peer connection work begins.
+current safety contract for manual peer probing and future connection work.

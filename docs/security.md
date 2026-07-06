@@ -32,16 +32,18 @@ The first time the app opens a network listener, Windows Defender Firewall will 
 
 Manual peer endpoint validation is local input parsing only. It does not perform
 DNS lookup, LAN discovery, socket creation, file access, or transfer startup.
-The UI labels a valid manual peer as validation-only until connection behavior
-is explicitly implemented in a later batch.
+Validation alone does not probe. In the UI, probing requires an explicit
+`Probe connection` click after a valid `ManualPeerEndpoint` exists; text changes
+clear the stored validated endpoint and disable probing.
 
 ## Manual peer networking contract
 
 Networking now includes a bounded manual peer connection probe. It accepts
 `ManualPeerEndpoint`, not raw string input from the UI, performs one bounded
 `TcpClient` connection attempt, and disposes the client immediately after the
-probe. It is not wired into the UI and does not send files, start transfers, or
-perform receiver confirmation.
+probe. The App can invoke it only from an explicit user click using the stored
+validated endpoint. It does not send files, start transfers, or perform receiver
+confirmation.
 
 The manual connection path must not use DNS, must not scan, must not create
 retry storms, must not run background probing, and must not use broadcast or

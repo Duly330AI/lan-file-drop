@@ -1,9 +1,11 @@
 # UI Plan & Screenshot Plan
 
-Status: Batch 5B keeps the Avalonia UI shell intentionally **not wired to any
-transfer, socket, DNS, or filesystem operation**. The manual peer input is now
-enabled for local validation only; it does not connect to another device.
-Controls that would trigger real file or network actions remain disabled.
+Status: Batch 5G keeps the Avalonia UI shell intentionally **not wired to file
+transfer, DNS, LAN discovery, receiver confirmation, or filesystem send
+operations**. The manual peer input supports local validation, then an optional
+explicit `Probe connection` click. The probe is probe-only: it sends no files
+and starts no transfer. Controls that would trigger real file transfer actions
+remain disabled.
 
 ## Current shell sections
 
@@ -11,9 +13,13 @@ Controls that would trigger real file or network actions remain disabled.
 2. **Local device** — placeholder display name and `Not connected · UI shell only` status.
 3. **Send files** — drag & drop placeholder zone (visual only, no file reads),
    disabled `Select files…` and `Send (Coming later)` buttons.
-4. **Peers** — manual peer input plus `Validate peer` button. The button runs
-   local endpoint validation only. A valid endpoint is displayed as
-   `Validated only — not connected`; no LAN discovery or connection is attempted.
+4. **Peers** — manual peer input plus `Validate peer` and `Probe connection`
+   buttons. `Validate peer` runs local endpoint validation only. A valid
+   endpoint is stored as a `ManualPeerEndpoint`; text changes clear that stored
+   endpoint and disable probing. `Probe connection` is enabled only after a
+   valid endpoint exists, runs only from explicit user click, uses the stored
+   validated endpoint rather than raw text, sends no files, starts no transfer,
+   performs no receiver confirmation, and does not implement LAN discovery.
 5. **Incoming transfer** — placeholder confirmation card with disabled
    `Accept` / `Reject` buttons.
 6. **Transfer log** — static sample / empty-state entries.
@@ -29,6 +35,7 @@ Controls that would trigger real file or network actions remain disabled.
 
 ## Notes
 
-- Keep the disabled/"Coming later" labels until the matching feature is real.
+- Keep disabled/"Coming later" labels for file transfer actions until the
+  matching feature is real.
 - No screenshot should ever expose private IPs, MAC addresses, or hostnames —
   use placeholder / redacted values in published images.

@@ -4,9 +4,9 @@
 
 A safe, boring LAN-only file transfer app for trusted devices — no cloud, no SMB, no admin rights, no credentials.
 
-> **MVP status:** Early scaffold. Core validation, UI-only manual peer
-> validation, and a bounded Networking probe exist, but the UI does not connect
-> or transfer files yet.
+> **MVP status:** Early scaffold. Core validation, UI manual peer validation,
+> and an explicit UI-triggered bounded manual peer probe exist, but the UI does
+> not transfer files yet.
 
 ## Safety
 
@@ -41,12 +41,12 @@ What works now:
 - Local loopback transfer prototype
 - Static Avalonia UI shell
 - Manual peer endpoint validation in Core
-- Manual peer input validation in the UI, labelled as validation-only and not connected
-- Bounded manual peer connection probe in Networking, not wired into the UI
+- Manual peer input validation in the UI, with text changes clearing the stored validated endpoint
+- Explicit `Probe connection` UI action using the stored validated `ManualPeerEndpoint`
+- Bounded manual peer connection probe in Networking; probe-only, with no file send or transfer start
 
 Not implemented yet:
 
-- UI-triggered manual connection/probe
 - Real file picker or sending from the UI
 - Receiver confirmation flow wired to networking
 - LAN discovery
@@ -92,7 +92,9 @@ See [docs/architecture.md](docs/architecture.md) for details.
 - **Batch 5C** — documentation update for manual peer validation ✅
 - **Batch 5D** — manual peer connection plan and networking safety contract ✅
 - **Batch 5E** — bounded manual peer connection probe in Networking ✅
-- **Batch 5 next** — wire explicit UI-triggered probe without transfer; LAN discovery remains later
+- **Batch 5F** — documentation update for manual peer probe status ✅
+- **Batch 5G** — explicit UI-triggered manual peer probe without transfer ✅
+- **Batch 5 next** — manual peer transfer remains later; LAN discovery remains later
 - **Batch 6** — two-PC manual test hardening
 
 ## Documentation
