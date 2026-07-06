@@ -1,14 +1,16 @@
 # UI Plan & Screenshot Plan
 
-Status: Batch 8A keeps the Avalonia UI shell intentionally **not wired to file
-transfer, DNS, LAN discovery, receiver confirmation, checksum reading, or
-filesystem send operations**. The manual peer input supports local validation,
+Status: Batch 9A keeps the Avalonia UI shell intentionally **not wired to file
+transfer, DNS, LAN discovery, receiver confirmation, or filesystem send
+operations**. The manual peer input supports local validation,
 then an optional explicit `Probe connection` click. The probe is probe-only: it
 sends no files and starts no transfer. `Select files...` opens an explicit file
 picker and previews selected file names and sizes only. The Send files section
 also shows readiness checks and can prepare an outgoing draft/review from safe
-preview metadata only. Controls that would trigger real file transfer actions
-remain disabled.
+preview metadata only. `Prepare manifest` is the only UI path that reads
+selected file contents, and only after explicit user click, to calculate
+SHA-256 checksums and prepare manifest metadata. Controls that would trigger
+real file transfer actions remain disabled.
 
 ## Current shell sections
 
@@ -18,13 +20,14 @@ remain disabled.
    the platform file picker only from explicit user click, then shows selected
    file count, total size, file names, and file sizes. It does not display full
    local paths by default, read file contents, compute checksums, scan folders,
-   or start transfer. The Send readiness area summarizes peer state, selected
-   file state, and `Transfer not implemented yet` as ready checks only. `Send
-   (Coming later)` remains disabled. `Prepare transfer draft` creates a
+   or start transfer during selection. The Send readiness area summarizes peer
+   state, selected file state, and `Transfer not implemented yet` as ready
+   checks only. `Send (Coming later)` remains disabled. `Prepare transfer draft` creates a
    review-only draft from the validated peer display and selected file metadata;
    it shows checksums not calculated, receiver confirmation required later, not
    sent, and transfer not implemented. Clearing or changing peer/files clears
-   the draft.
+   the draft. `Prepare manifest` explicitly reads the selected files, computes
+   SHA-256 checksums, prepares manifest metadata, and still sends nothing.
 4. **Peers** — manual peer input plus `Validate peer` and `Probe connection`
    buttons. `Validate peer` runs local endpoint validation only. A valid
    endpoint is stored as a `ManualPeerEndpoint`; text changes clear that stored

@@ -24,6 +24,8 @@ Pure domain logic with no networking and no UI dependency:
 - Manual peer endpoint validation for user-entered targets
 - Outgoing transfer draft model for preview/review state only; no transfer
   execution or file handles
+- Prepared outgoing manifest model with safe file names, optional sizes, and
+  `FileChecksum` values; no file handles or local paths
 
 Kept dependency-free so it can be unit tested in isolation and reused unchanged if a different UI or transport is added later.
 
@@ -55,6 +57,9 @@ The Avalonia desktop shell:
   orchestration exists yet
 - Can create and display an outgoing transfer draft from Core preview metadata;
   this is review-only and does not call Networking or start transfer
+- Can retain current selected `IStorageFile` handles in App state only, then
+  read them from an explicit manifest preparation action to compute checksums;
+  no file handles cross into Core
 
 ### Tests
 
@@ -82,8 +87,10 @@ UI.
 
 The App may ask the platform file picker for user-selected files and keep a
 preview model containing file name and size only. Full local paths are not part
-of the preview state or default display. The current preview path does not read
-file contents, compute checksums, scan folders, send files, or start transfer.
+of the preview state or default display. Selection itself does not read file
+contents, compute checksums, scan folders, send files, or start transfer. The
+App retains selected `IStorageFile` handles only for the current selection and
+disposes them when the selection is replaced, cleared, or the window closes.
 
 ## Send Readiness Boundary
 
@@ -100,6 +107,15 @@ sizes, counts, known-size totals, unknown-size state, and a created timestamp.
 They do not contain local paths, `IStorageFile` handles, checksums, file
 contents, or transfer execution state. The App uses these models only for a
 review skeleton; Networking is untouched.
+
+## Prepared Manifest Boundary
+
+The App can explicitly read selected file streams after the user clicks
+`Prepare manifest`. It uses Core checksum logic to calculate SHA-256 values and
+Core prepared-manifest models to store safe metadata. Core receives safe file
+names, optional sizes, and `FileChecksum` values only; it never receives
+Avalonia storage handles, full local paths, or file streams. Networking remains
+untouched and no transfer starts.
 
 See [manual-peer-connection-plan.md](manual-peer-connection-plan.md) for the
 current safety contract for manual peer probing and future connection work.

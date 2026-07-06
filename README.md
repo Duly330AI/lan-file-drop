@@ -6,8 +6,8 @@ A safe, boring LAN-only file transfer app for trusted devices — no cloud, no S
 
 > **MVP status:** Early scaffold. Core validation, UI manual peer validation,
 > an explicit UI-triggered bounded manual peer probe, and a file picker preview
-> with send-readiness checks and outgoing draft review exist, but the UI does
-> not transfer files yet.
+> with send-readiness checks, outgoing draft review, and explicit checksum /
+> manifest preparation exist, but the UI does not transfer files yet.
 
 ## Safety
 
@@ -48,6 +48,7 @@ What works now:
 - Explicit file picker preview in the UI; it shows selected file count, total size, file names, and file sizes only
 - Send readiness UI skeleton summarizing peer, selected-file, and transfer-not-implemented status
 - Outgoing transfer draft/review skeleton using safe preview metadata only
+- Explicit checksum and manifest preparation for selected files; nothing is sent
 - Receiver confirmation UI skeleton with disabled Accept/Reject controls
 
 Not implemented yet:
@@ -56,7 +57,8 @@ Not implemented yet:
 - Receiver confirmation flow wired to networking
 - LAN discovery
 - Manual peer file transfer
-- Checksum reading for selected files
+- Checksum verification after real transfer
+- Sender/receiver checksum comparison
 - Real two-PC transfer test
 
 ## Non-Goals
@@ -105,7 +107,8 @@ See [docs/architecture.md](docs/architecture.md) for details.
 - **Batch 6C** — selected-file preview hardening ✅
 - **Batch 7A** — send readiness UI skeleton without transfer ✅
 - **Batch 8A** — outgoing transfer draft and receiver confirmation skeleton without transfer ✅
-- **Batch 8 next** — manual peer transfer remains later; LAN discovery remains later
+- **Batch 9A** — explicit checksum and manifest preparation without sending ✅
+- **Batch 9 next** — manual peer transfer remains later; LAN discovery remains later
 - **Later** — two-PC manual test hardening after real transfer exists
 
 ## Documentation

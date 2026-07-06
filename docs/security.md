@@ -58,8 +58,9 @@ must remain sanitized, and checksum verification remains required after transfer
 The App has an explicit `Select files...` action that opens the platform file
 picker only after the user clicks it. The preview stores and displays selected
 file names and sizes only. It does not display full local paths by default, does
-not read file contents, does not compute checksums, does not scan folders, does
-not start a transfer, and does not send files. `Send` remains disabled.
+not read file contents during selection, does not compute checksums during
+selection, does not scan folders, does not start a transfer, and does not send
+files. `Send` remains disabled.
 
 ## Current send readiness display
 
@@ -76,6 +77,16 @@ when available. Drafts do not include full local paths, file handles, file
 contents, or checksums. Preparing or clearing a draft does not send files, start
 transfer, perform receiver confirmation, create a listener, or add LAN
 discovery.
+
+## Current checksum and manifest preparation
+
+The App retains selected file handles only for the current explicit selection so
+the user can later click `Prepare manifest`. That action is the only current UI
+path that reads selected file contents: it opens selected file streams, computes
+SHA-256 checksums, and prepares manifest metadata. It does not display or log
+full local paths, write files, send files, start transfer, perform receiver
+confirmation, or add LAN discovery. Selection changes, clear actions, and window
+close dispose retained selection handles.
 
 ## Reporting concerns
 

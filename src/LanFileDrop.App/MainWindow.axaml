@@ -128,6 +128,10 @@
                                     Content="Prepare transfer draft"
                                     IsEnabled="False"
                                     Click="OnPrepareTransferDraftClick" />
+                            <Button x:Name="PrepareManifestButton"
+                                    Content="Prepare manifest"
+                                    IsEnabled="False"
+                                    Click="OnPrepareManifestClick" />
                             <Button x:Name="SendButton"
                                     Content="Send (Coming later)"
                                     IsEnabled="False" />
@@ -144,6 +148,9 @@
                                 <TextBlock x:Name="OutgoingDraftPeerText"
                                            TextWrapping="Wrap" />
                                 <TextBlock x:Name="OutgoingDraftFilesText"
+                                           TextWrapping="Wrap" />
+                                <TextBlock x:Name="OutgoingDraftManifestText"
+                                           Classes="muted"
                                            TextWrapping="Wrap" />
                                 <TextBlock x:Name="OutgoingDraftSafetyText"
                                            Classes="muted"
