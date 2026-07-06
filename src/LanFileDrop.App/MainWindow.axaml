@@ -118,13 +118,18 @@
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <TextBox x:Name="ManualPeerInput"
                                      PlaceholderText="[LAN-IP]:5000"
-                                     Width="240" />
+                                     Width="240"
+                                     TextChanged="OnManualPeerInputTextChanged" />
                             <Button Content="Validate peer"
                                     Click="OnValidatePeerClick" />
+                            <Button x:Name="ProbeConnectionButton"
+                                    Content="Probe connection"
+                                    IsEnabled="False"
+                                    Click="OnProbeConnectionClick" />
                         </StackPanel>
                         <TextBlock x:Name="ManualPeerStatusText"
                                    Classes="muted"
-                                   Text="Manual peer validation only — no connection is attempted."
+                                   Text="Manual peer validation and probe only — no files are sent and no transfer is started."
                                    TextWrapping="Wrap" />
                     </StackPanel>
                 </Border>
