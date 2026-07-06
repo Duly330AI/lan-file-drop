@@ -50,18 +50,23 @@ The Avalonia desktop shell:
 - Wires Core and Networking together
 - Contains no business logic of its own — it orchestrates calls into Core and Networking
 - Displays manual peer validation state and can invoke the bounded Networking
-  probe from a stored validated endpoint; no App manual peer transfer flow
-  exists yet
+  probe from a stored validated endpoint
 - Can preview explicitly selected file names and sizes in App state only;
   selection itself does not read file contents, compute checksums, send, or
   start a receiver-confirmed transfer
-- Displays App-level send readiness from existing UI state only; no transfer
-  orchestration exists yet
+- Displays App-level send readiness from existing UI state and only enables
+  send when selected files, validated peer, and prepared manifest still match
 - Can create and display an outgoing transfer draft from Core preview metadata;
   this is review-only and does not call Networking or start transfer
 - Can retain current selected `IStorageFile` handles in App state only, then
   read them from an explicit manifest preparation action to compute checksums;
   no file handles cross into Core
+- Can start one one-shot manual receiver from explicit user click after a
+  receive folder and port are selected, and can pass incoming request metadata
+  through an explicit Accept/Reject confirmation UI
+- Can invoke `ManualPeerTransferSender.SendAsync` only from the explicit
+  `Send prepared transfer` click using the stored validated endpoint and
+  prepared manifest
 
 ### Tests
 
@@ -91,9 +96,14 @@ callback and does not read payload frames or write files before acceptance.
 After acceptance it streams each payload into a private temporary file while
 hashing it, verifies size and SHA-256, and only then promotes the temp file to
 its final name; multi-file promotion is all-or-nothing with best-effort rollback
-and temp cleanup. The App is not wired to this path yet and still does not send,
-listen, accept, or write transfer files. Future UI wiring must continue to pass
-validated endpoint and prepared manifest objects, not raw UI text.
+and temp cleanup. The App is now wired to this path in a controlled way: it
+passes validated endpoint and prepared manifest objects, not raw UI text, starts
+the receiver only from an explicit click, and requires receiver Accept before
+Networking writes final files. LAN discovery remains unimplemented.
+
+The App receiver uses `IPAddress.Any` only in the explicit `Start receiver`
+path so a manually addressed LAN peer can reach the selected port. There is no
+UDP, broadcast, multicast, discovery loop, background listener, or auto-restart.
 
 ## Selected File Preview Boundary
 
@@ -109,7 +119,8 @@ disposes them when the selection is replaced, cleared, or the window closes.
 The App-level readiness display summarizes existing UI state: manual peer
 validation/probe result, selected-file preview count/size, and transfer status.
 It is presentation-only and does not orchestrate file sending, checksum reading,
-receiver confirmation, LAN discovery, or transfer startup.
+receiver confirmation, LAN discovery, or transfer startup until the explicit
+`Send prepared transfer` click is available and all readiness checks pass.
 
 ## Outgoing Draft Boundary
 
@@ -118,7 +129,8 @@ models. They contain validated peer display text, safe file names, optional file
 sizes, counts, known-size totals, unknown-size state, and a created timestamp.
 They do not contain local paths, `IStorageFile` handles, checksums, file
 contents, or transfer execution state. The App uses these models only for a
-review skeleton; Networking is untouched.
+review skeleton. Networking is not called until the separate prepared-manifest
+send action.
 
 ## Prepared Manifest Boundary
 
@@ -128,6 +140,15 @@ Core prepared-manifest models to store safe metadata. Core receives safe file
 names, optional sizes, and `FileChecksum` values only; it never receives
 Avalonia storage handles, full local paths, or file streams. Preparing a
 manifest does not call Networking and no transfer starts.
+
+## Receive Folder Boundary
+
+The App can ask the platform folder picker for one receive destination after an
+explicit user click. It may call `TryGetLocalPath` only for that selected
+receive folder because the Networking receiver requires a local directory path
+for safe temp-file and final-file writes. The full path remains internal App
+state and is not displayed or logged. The App does not enumerate, scan, or send
+folders.
 
 See [manual-peer-connection-plan.md](manual-peer-connection-plan.md) for the
 current safety contract for manual peer probing and future connection work.

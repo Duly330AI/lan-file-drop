@@ -44,7 +44,7 @@
             <Border Background="#33F2A900" BorderBrush="#F2A900" BorderThickness="1"
                     CornerRadius="6" Padding="12,10">
                 <TextBlock TextWrapping="Wrap"
-                           Text="Early MVP shell - manual transfer networking exists, but send/receive UI wiring remains guarded." />
+                           Text="Early MVP shell - manual transfer is explicit: select files, prepare manifest, start receiver, accept, then send." />
             </Border>
         </StackPanel>
 
@@ -103,7 +103,7 @@
                         </Border>
                         <StackPanel Spacing="4" Margin="0,0,0,12">
                             <TextBlock Text="Send readiness" FontWeight="SemiBold" />
-                            <TextBlock Text="Ready checks only - nothing sent. App send remains disabled until the manual transfer UI is wired."
+                            <TextBlock Text="Ready checks only - nothing sent until you click Send prepared transfer."
                                        Classes="muted"
                                        TextWrapping="Wrap" />
                             <TextBlock x:Name="ReadinessPeerText"
@@ -133,8 +133,9 @@
                                     IsEnabled="False"
                                     Click="OnPrepareManifestClick" />
                             <Button x:Name="SendButton"
-                                    Content="Send (App wire-up later)"
-                                    IsEnabled="False" />
+                                    Content="Send prepared transfer"
+                                    IsEnabled="False"
+                                    Click="OnSendPreparedTransferClick" />
                         </StackPanel>
                         <Border x:Name="OutgoingDraftPanel"
                                 IsVisible="False"
@@ -187,7 +188,8 @@
                                      PlaceholderText="[LAN-IP]:5000"
                                      Width="240"
                                      TextChanged="OnManualPeerInputTextChanged" />
-                            <Button Content="Validate peer"
+                            <Button x:Name="ValidatePeerButton"
+                                    Content="Validate peer"
                                     Click="OnValidatePeerClick" />
                             <Button x:Name="ProbeConnectionButton"
                                     Content="Probe connection"
@@ -208,15 +210,55 @@
                         <Border BorderBrush="{DynamicResource ThemeBorderMidBrush}" BorderThickness="1"
                                 CornerRadius="6" Padding="16">
                             <StackPanel Spacing="8">
-                                <TextBlock Classes="muted"
-                                           TextWrapping="Wrap"
-                                           Text="No incoming transfer is active. Networking requires receiver confirmation before writing, but this UI panel is not wired yet." />
-                                <TextBlock Classes="muted"
-                                           TextWrapping="Wrap"
-                                           Text="Accept/Reject are disabled; this skeleton does not listen, accept, write files, or start transfer from the App." />
                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <Button Content="Accept" IsEnabled="False" />
-                                    <Button Content="Reject" IsEnabled="False" />
+                                    <Button x:Name="SelectReceiveFolderButton"
+                                            Content="Select receive folder"
+                                            Click="OnSelectReceiveFolderClick" />
+                                    <TextBlock x:Name="ReceiveFolderStatusText"
+                                               Classes="muted"
+                                               VerticalAlignment="Center"
+                                               Text="No receive folder selected" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="Port:"
+                                               Classes="muted"
+                                               VerticalAlignment="Center" />
+                                    <TextBox x:Name="ReceivePortInput"
+                                             Width="88"
+                                             Text="5000" />
+                                    <Button x:Name="StartReceiverButton"
+                                            Content="Start receiver"
+                                            IsEnabled="False"
+                                            Click="OnStartReceiverClick" />
+                                    <Button x:Name="StopReceiverButton"
+                                            Content="Stop receiver"
+                                            IsEnabled="False"
+                                            Click="OnStopReceiverClick" />
+                                </StackPanel>
+                                <TextBlock x:Name="ReceiverStatusText"
+                                           Classes="muted"
+                                           TextWrapping="Wrap"
+                                           Text="Receiver is stopped. It starts only from an explicit click and handles one transfer." />
+                                <TextBlock x:Name="IncomingRequestSummaryText"
+                                           TextWrapping="Wrap"
+                                           Text="No incoming transfer is active." />
+                                <TextBlock x:Name="IncomingRequestFilesText"
+                                           Classes="muted"
+                                           TextWrapping="Wrap"
+                                           Text="No request metadata yet." />
+                                <TextBlock x:Name="IncomingRequestIntegrityText"
+                                           Classes="muted"
+                                           TextWrapping="Wrap"
+                                           Text="No files are written before Accept." />
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button x:Name="AcceptIncomingButton"
+                                            Content="Accept"
+                                            IsEnabled="False"
+                                            Click="OnAcceptIncomingClick" />
+                                    <Button x:Name="RejectIncomingButton"
+                                            Content="Reject"
+                                            IsEnabled="False"
+                                            Click="OnRejectIncomingClick" />
                                 </StackPanel>
                             </StackPanel>
                         </Border>

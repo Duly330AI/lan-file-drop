@@ -65,8 +65,23 @@ and the temp files are deleted on a best-effort basis, so a partial transfer
 never leaves final or corrupt files behind. Structurally readable but invalid
 requests (bad names, duplicates, oversize) receive a clean rejection status
 rather than a dropped connection, and failure reasons are generic and never
-include local paths. The current App UI is not wired to this transfer path yet:
-it does not listen, accept, send, or write transfer files.
+include local paths.
+
+The App now wires this path only behind explicit user actions:
+
+- `Select receive folder` opens the folder picker; `TryGetLocalPath` is used
+  only for this receive destination and the returned full path is stored
+  internally, never displayed or logged.
+- `Start receiver` requires a selected receive folder and valid port, binds one
+  one-shot TCP listener from that explicit click, and does not loop,
+  auto-restart, scan, discover, broadcast, or multicast. The listener uses
+  `IPAddress.Any` in this explicit path so a manually addressed LAN peer can
+  connect to the chosen port.
+- Incoming request metadata is shown without full paths, and `Accept`/`Reject`
+  are enabled only while a request is awaiting a decision.
+- `Prepare manifest` and `Send prepared transfer` are separate clicks. Send
+  uses the stored validated `ManualPeerEndpoint` and prepared manifest, not raw
+  UI text, and does not start automatically after manifest preparation.
 
 The manual connection path must not use DNS, must not scan, must not create
 retry storms, must not run background probing, and must not use broadcast or
@@ -84,23 +99,23 @@ picker only after the user clicks it. The preview stores and displays selected
 file names and sizes only. It does not display full local paths by default, does
 not read file contents during selection, does not compute checksums during
 selection, does not scan folders, does not start a transfer, and does not send
-files. `Send` remains disabled.
+files.
 
 ## Current send readiness display
 
 The App can display readiness checks for peer state, selected-file state, and
-transfer status. These checks are presentation-only. They do not read file
-contents, compute checksums, start transfer, send files, perform receiver
-confirmation, or add LAN discovery.
+transfer status. These checks do not read file contents, compute checksums,
+perform receiver confirmation, or add LAN discovery. They enable
+`Send prepared transfer` only when the stored validated peer, selected files,
+and prepared manifest still match.
 
 ## Current outgoing transfer draft
 
 The App can prepare a review-only outgoing transfer draft from safe preview
 metadata: validated peer display, selected file names, and selected file sizes
 when available. Drafts do not include full local paths, file handles, file
-contents, or checksums. Preparing or clearing a draft does not send files, start
-transfer, perform receiver confirmation, create a listener, or add LAN
-discovery.
+contents, or checksums. Preparing or clearing a draft does not send files,
+perform receiver confirmation, create a listener, or add LAN discovery.
 
 ## Current checksum and manifest preparation
 
@@ -109,8 +124,8 @@ the user can later click `Prepare manifest`. That action is the only current UI
 path that reads selected file contents: it opens selected file streams, computes
 SHA-256 checksums, and prepares manifest metadata. It does not display or log
 full local paths, write files, send files, start transfer, perform receiver
-confirmation, or add LAN discovery. Selection changes, clear actions, and window
-close dispose retained selection handles.
+confirmation, or add LAN discovery. Selection changes, peer changes, clear
+actions, and window close dispose or invalidate retained selection state.
 
 ## Reporting concerns
 

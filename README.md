@@ -7,8 +7,9 @@ A safe, boring LAN-only file transfer app for trusted devices — no cloud, no S
 > **MVP status:** Early scaffold. Core validation, UI manual peer validation,
 > an explicit UI-triggered bounded manual peer probe, file picker preview,
 > send-readiness checks, outgoing draft review, explicit checksum / manifest
-> preparation, and a local manual peer transfer path in Networking exist. The
-> App UI still does not send, listen, accept, or write transfer files.
+> preparation, a hardened local manual peer transfer path in Networking, and
+> controlled App send/receive wire-up exist. There is still no LAN discovery,
+> real two-PC validation, packaging/release flow, or production-readiness claim.
 
 ## Safety
 
@@ -41,24 +42,26 @@ What works now:
 - Core domain models for transfer requests, peers, and manifests
 - Checksum and transfer manifest logic
 - Local loopback transfer prototype
-- Static Avalonia UI shell
+- Avalonia UI shell with controlled manual peer transfer controls
 - Manual peer endpoint validation in Core
 - Manual peer input validation in the UI, with text changes clearing the stored validated endpoint
 - Explicit `Probe connection` UI action using the stored validated `ManualPeerEndpoint`
 - Bounded manual peer connection probe in Networking; probe-only, with no file send or transfer start
 - Explicit file picker preview in the UI; it shows selected file count, total size, file names, and file sizes only
-- Send readiness UI skeleton summarizing peer, selected-file, and App-transfer-disabled status
+- Send readiness UI summarizing peer, selected-file, manifest, and send status
 - Outgoing transfer draft/review skeleton using safe preview metadata only
 - Explicit checksum and manifest preparation for selected files; nothing is sent
 - Networking manual peer sender/receiver path with explicit receiver confirmation, reject-without-write behavior, checksum verification, and no silent overwrite
-- Receiver confirmation UI skeleton with disabled Accept/Reject controls
+- Explicit receive-folder picker and one-shot App receiver start; receive folder path is stored internally and not displayed
+- Incoming transfer confirmation in the App with Accept/Reject enabled only while a request is pending
+- Explicit `Send prepared transfer` App action using the stored validated peer and prepared manifest
 
 Not implemented yet:
 
-- Real sending from the UI
-- Receiver confirmation flow wired into the App UI
 - LAN discovery
 - Real two-PC transfer test
+- Polished production workflow
+- Packaging/release flow
 - Production readiness
 
 ## Non-Goals
@@ -109,8 +112,9 @@ See [docs/architecture.md](docs/architecture.md) for details.
 - **Batch 8A** — outgoing transfer draft and receiver confirmation skeleton without transfer ✅
 - **Batch 9A** — explicit checksum and manifest preparation without sending ✅
 - **Batch 10A** — local manual peer transfer path in Networking with receiver confirmation ✅
-- **Batch 10 next** — App send/receive wiring remains later; LAN discovery remains later
-- **Later** — real two-PC manual test hardening after App transfer wiring exists
+- **Batch 11A** — controlled App wire-up for manual peer transfer, no discovery ✅
+- **Batch 11 next** — App polish, manual smoke hardening, and real two-PC validation remain later
+- **Later** — LAN discovery, packaging/release, and production-readiness hardening
 
 ## Documentation
 

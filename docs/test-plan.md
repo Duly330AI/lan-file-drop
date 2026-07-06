@@ -34,10 +34,28 @@ talking over a loopback socket. This validates the wire protocol, receiver
 confirmation boundary, overwrite protection, and integrity checking without
 needing a second physical device.
 
-### 3. Two-PC manual test (manual, later)
+### 3. Single-app manual loopback smoke (manual, current)
 
-Once App send/receive wiring exists, perform a manual test between two real
-Windows devices on the same LAN:
+When manually checking the App, one Windows instance can exercise the controlled
+loopback path without discovery:
+
+- Select a receive folder.
+- Start receiver on an explicit local port.
+- Select files.
+- Validate a manual peer such as loopback plus the selected port.
+- Prepare manifest.
+- Click `Send prepared transfer`.
+- Confirm the incoming request appears and no final file is written before
+  `Accept`.
+- Click `Accept` and confirm completion status without full path display.
+- Repeat with `Reject` to confirm no file is written.
+
+This smoke is manual and intentionally not a scripted UI test.
+
+### 4. Two-PC manual test (manual, later)
+
+After the single-machine loopback flow has been reviewed, perform a deliberate
+manual test between two real Windows devices on the same LAN:
 
 - Confirm discovery or manual-IP connection succeeds.
 - Confirm the receiving side shows the confirmation prompt and no file is written before acceptance.
