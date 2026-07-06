@@ -60,8 +60,8 @@ See [docs/architecture.md](docs/architecture.md) for details.
 - **Batch 0** — repo scaffold, solution, docs ✅
 - **Batch 1** — core domain models + tests ✅
 - **Batch 2** — transfer manifest / checksum logic + tests ✅
-- **Batch 3** — local loopback transfer prototype ✅ *(this batch)*
-- **Batch 4** — minimal Avalonia UI shell
+- **Batch 3** — local loopback transfer prototype ✅
+- **Batch 4** — minimal Avalonia UI shell ✅ *(this batch)*
 - **Batch 5** — LAN discovery / manual IP fallback
 - **Batch 6** — two-PC manual test hardening
 

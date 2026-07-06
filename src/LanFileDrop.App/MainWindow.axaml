@@ -2,8 +2,148 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="820" d:DesignHeight="720"
         x:Class="LanFileDrop.App.MainWindow"
+        Width="820" Height="720"
+        MinWidth="640" MinHeight="520"
         Title="LAN File Drop">
-    LAN File Drop — early scaffold, not functional yet.
+
+    <Window.Styles>
+        <!-- Card container -->
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderMidBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="Margin" Value="0,0,0,12" />
+        </Style>
+        <Style Selector="TextBlock.sectionTitle">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+        <Style Selector="TextBlock.muted">
+            <Setter Property="Opacity" Value="0.7" />
+        </Style>
+        <Style Selector="Border.dropzone">
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderMidBrush}" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="24" />
+            <Setter Property="Margin" Value="0,0,0,12" />
+            <Setter Property="MinHeight" Value="96" />
+        </Style>
+    </Window.Styles>
+
+    <DockPanel>
+
+        <!-- Top: title + status banner -->
+        <StackPanel DockPanel.Dock="Top" Margin="20,20,20,0" Spacing="8">
+            <TextBlock Text="LAN File Drop" FontSize="24" FontWeight="Bold" />
+            <Border Background="#33F2A900" BorderBrush="#F2A900" BorderThickness="1"
+                    CornerRadius="6" Padding="12,10">
+                <TextBlock TextWrapping="Wrap"
+                           Text="Early MVP shell — transfers are not connected to the UI yet." />
+            </Border>
+        </StackPanel>
+
+        <ScrollViewer Padding="20,12,20,20">
+            <StackPanel>
+
+                <!-- Safety bullets -->
+                <Border Classes="card">
+                    <StackPanel Spacing="4">
+                        <TextBlock Classes="sectionTitle" Text="Safety" />
+                        <TextBlock Text="• No admin rights" />
+                        <TextBlock Text="• No SMB" />
+                        <TextBlock Text="• No credentials" />
+                        <TextBlock Text="• No command execution" />
+                        <TextBlock Text="• Receiver confirmation required" />
+                        <TextBlock Text="• Local network only" />
+                    </StackPanel>
+                </Border>
+
+                <!-- 1. Local device -->
+                <Border Classes="card">
+                    <StackPanel Spacing="6">
+                        <TextBlock Classes="sectionTitle" Text="Local device" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="Display name:" Classes="muted" />
+                            <TextBlock Text="this-device (placeholder)" FontWeight="SemiBold" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="Status:" Classes="muted" />
+                            <TextBlock Text="Not connected · UI shell only" FontWeight="SemiBold" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- 2. Send files -->
+                <Border Classes="card">
+                    <StackPanel>
+                        <TextBlock Classes="sectionTitle" Text="Send files" />
+                        <Border Classes="dropzone">
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="4">
+                                <TextBlock HorizontalAlignment="Center"
+                                           Text="Drag &amp; drop files here" FontWeight="SemiBold" />
+                                <TextBlock HorizontalAlignment="Center" Classes="muted"
+                                           Text="Visual placeholder — files are not read yet." />
+                            </StackPanel>
+                        </Border>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button Content="Select files…" IsEnabled="False" />
+                            <Button Content="Send (Coming later)" IsEnabled="False" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- 3. Peers -->
+                <Border Classes="card">
+                    <StackPanel Spacing="8">
+                        <TextBlock Classes="sectionTitle" Text="Peers" />
+                        <Border BorderBrush="{DynamicResource ThemeBorderMidBrush}" BorderThickness="1"
+                                CornerRadius="6" Padding="16" MinHeight="64">
+                            <TextBlock Classes="muted" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                       Text="No peers — discovery is not implemented yet." />
+                        </Border>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBox PlaceholderText="Manual IP (Coming in Batch 5)" IsEnabled="False" Width="240" />
+                            <Button Content="Add peer" IsEnabled="False" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- 4. Incoming transfer -->
+                <Border Classes="card">
+                    <StackPanel Spacing="8">
+                        <TextBlock Classes="sectionTitle" Text="Incoming transfer" />
+                        <Border BorderBrush="{DynamicResource ThemeBorderMidBrush}" BorderThickness="1"
+                                CornerRadius="6" Padding="16">
+                            <StackPanel Spacing="8">
+                                <TextBlock Classes="muted"
+                                           Text="No incoming transfer. Confirmation card will appear here." />
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button Content="Accept" IsEnabled="False" />
+                                    <Button Content="Reject" IsEnabled="False" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- 5. Transfer log -->
+                <Border Classes="card">
+                    <StackPanel Spacing="8">
+                        <TextBlock Classes="sectionTitle" Text="Transfer log" />
+                        <StackPanel Spacing="4">
+                            <TextBlock Classes="muted" Text="[sample] UI shell started — no transfers performed." />
+                            <TextBlock Classes="muted" Text="No transfer activity yet." />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
 </Window>
