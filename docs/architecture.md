@@ -49,6 +49,8 @@ The Avalonia desktop shell:
 - Can preview explicitly selected file names and sizes in App state only; no
   file content reading, checksum reading, sending, or receiver-confirmed
   transfer flow exists yet
+- Displays App-level send readiness from existing UI state only; no transfer
+  orchestration exists yet
 
 ### Tests
 
@@ -78,6 +80,13 @@ The App may ask the platform file picker for user-selected files and keep a
 preview model containing file name and size only. Full local paths are not part
 of the preview state or default display. The current preview path does not read
 file contents, compute checksums, scan folders, send files, or start transfer.
+
+## Send Readiness Boundary
+
+The App-level readiness display summarizes existing UI state: manual peer
+validation/probe result, selected-file preview count/size, and transfer status.
+It is presentation-only and does not orchestrate file sending, checksum reading,
+receiver confirmation, LAN discovery, or transfer startup.
 
 See [manual-peer-connection-plan.md](manual-peer-connection-plan.md) for the
 current safety contract for manual peer probing and future connection work.

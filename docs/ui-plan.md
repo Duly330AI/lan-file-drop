@@ -1,12 +1,13 @@
 # UI Plan & Screenshot Plan
 
-Status: Batch 6A keeps the Avalonia UI shell intentionally **not wired to file
+Status: Batch 7A keeps the Avalonia UI shell intentionally **not wired to file
 transfer, DNS, LAN discovery, receiver confirmation, checksum reading, or
 filesystem send operations**. The manual peer input supports local validation,
 then an optional explicit `Probe connection` click. The probe is probe-only: it
 sends no files and starts no transfer. `Select files...` opens an explicit file
-picker and previews selected file names and sizes only. Controls that would
-trigger real file transfer actions remain disabled.
+picker and previews selected file names and sizes only. The Send files section
+also shows readiness checks for peer, files, and transfer status. Controls that
+would trigger real file transfer actions remain disabled.
 
 ## Current shell sections
 
@@ -16,7 +17,9 @@ trigger real file transfer actions remain disabled.
    the platform file picker only from explicit user click, then shows selected
    file count, total size, file names, and file sizes. It does not display full
    local paths by default, read file contents, compute checksums, scan folders,
-   or start transfer. `Send (Coming later)` remains disabled.
+   or start transfer. The Send readiness area summarizes peer state, selected
+   file state, and `Transfer not implemented yet` as ready checks only. `Send
+   (Coming later)` remains disabled.
 4. **Peers** — manual peer input plus `Validate peer` and `Probe connection`
    buttons. `Validate peer` runs local endpoint validation only. A valid
    endpoint is stored as a `ManualPeerEndpoint`; text changes clear that stored

@@ -61,6 +61,13 @@ file names and sizes only. It does not display full local paths by default, does
 not read file contents, does not compute checksums, does not scan folders, does
 not start a transfer, and does not send files. `Send` remains disabled.
 
+## Current send readiness display
+
+The App can display readiness checks for peer state, selected-file state, and
+transfer status. These checks are presentation-only. They do not read file
+contents, compute checksums, start transfer, send files, perform receiver
+confirmation, or add LAN discovery.
+
 ## Reporting concerns
 
 As this is a portfolio project, please open a GitHub issue for any safety or security concern rather than a private disclosure — there is no production deployment or user data at stake.

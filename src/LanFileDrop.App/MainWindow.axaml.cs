@@ -15,6 +15,7 @@ public partial class MainWindow : Window
 
     private readonly List<SelectedFilePreview> _selectedFiles = [];
     private ManualPeerEndpoint? _validatedManualPeerEndpoint;
+    private ManualPeerConnectionProbeStatus? _lastManualPeerProbeStatus;
 
     public MainWindow()
     {
@@ -88,11 +89,13 @@ public partial class MainWindow : Window
             var display = endpoint!.Display;
 
             _validatedManualPeerEndpoint = endpoint;
+            _lastManualPeerProbeStatus = null;
             ManualPeerStatusText.Text = $"Validated peer: {display}";
             PeerPlaceholderText.IsVisible = false;
             ValidatedManualPeerText.IsVisible = true;
             ValidatedManualPeerText.Text = $"{display} — Validated only — not connected";
             ProbeConnectionButton.IsEnabled = true;
+            UpdateSendReadiness();
             return;
         }
 
@@ -118,13 +121,22 @@ public partial class MainWindow : Window
         {
             ProbeConnectionButton.IsEnabled = false;
             ManualPeerStatusText.Text = "Validate a peer before probing — no files sent.";
+            _lastManualPeerProbeStatus = null;
+            UpdateSendReadiness();
             return;
         }
 
         ProbeConnectionButton.IsEnabled = false;
+        _lastManualPeerProbeStatus = null;
+        UpdateSendReadiness();
         ManualPeerStatusText.Text = $"Probing {endpoint.Display} — no files are sent and no transfer is started.";
 
         var result = await ManualPeerConnectionProbe.ProbeAsync(endpoint);
+
+        if (_validatedManualPeerEndpoint == endpoint)
+        {
+            _lastManualPeerProbeStatus = result.Status;
+        }
 
         ManualPeerStatusText.Text = _validatedManualPeerEndpoint == endpoint
             ? GetProbeStatusText(result.Status)
@@ -134,15 +146,19 @@ public partial class MainWindow : Window
         {
             ProbeConnectionButton.IsEnabled = true;
         }
+
+        UpdateSendReadiness();
     }
 
     private void ClearValidatedManualPeer()
     {
         _validatedManualPeerEndpoint = null;
+        _lastManualPeerProbeStatus = null;
         ProbeConnectionButton.IsEnabled = false;
         PeerPlaceholderText.IsVisible = true;
         ValidatedManualPeerText.IsVisible = false;
         ValidatedManualPeerText.Text = string.Empty;
+        UpdateSendReadiness();
     }
 
     private static string GetProbeStatusText(ManualPeerConnectionProbeStatus status) =>
@@ -164,6 +180,7 @@ public partial class MainWindow : Window
             SelectedFilesSummaryText.Text = "No files selected";
             SelectedFilesStatusText.Text = statusText;
             ClearSelectionButton.IsEnabled = false;
+            UpdateSendReadiness();
             return;
         }
 
@@ -196,7 +213,43 @@ public partial class MainWindow : Window
             summaryText.Classes.Add("muted");
             SelectedFilesPreviewPanel.Children.Add(summaryText);
         }
+
+        UpdateSendReadiness();
     }
+
+    private void UpdateSendReadiness()
+    {
+        ReadinessPeerText.Text = GetPeerReadinessText();
+        ReadinessFilesText.Text = _selectedFiles.Count == 0
+            ? "Files: none selected."
+            : $"Files: {GetFileCountText(_selectedFiles.Count)} selected, total size {GetTotalSizeText(_selectedFiles)}.";
+        ReadinessTransferText.Text = "Transfer: not implemented yet; Send remains disabled. Ready checks only. Nothing sent.";
+    }
+
+    private string GetPeerReadinessText()
+    {
+        if (_validatedManualPeerEndpoint is null)
+        {
+            return "Peer: not validated.";
+        }
+
+        if (_lastManualPeerProbeStatus is { } probeStatus)
+        {
+            return $"Peer: validated; last probe {GetProbeReadinessStatusText(probeStatus)}.";
+        }
+
+        return "Peer: validated only; no probe result yet.";
+    }
+
+    private static string GetProbeReadinessStatusText(ManualPeerConnectionProbeStatus status) =>
+        status switch
+        {
+            ManualPeerConnectionProbeStatus.Connected => "connected",
+            ManualPeerConnectionProbeStatus.Timeout => "timed out",
+            ManualPeerConnectionProbeStatus.Failed => "failed",
+            ManualPeerConnectionProbeStatus.Cancelled => "cancelled",
+            _ => "finished",
+        };
 
     private static string GetDisplayFileName(string fileName)
     {
