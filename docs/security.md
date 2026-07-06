@@ -8,8 +8,8 @@ LAN File Drop is deliberately scoped to be a low-risk, "boring" application. Thi
 - Only transfer files that the sending user explicitly selects.
 - Only write received files after the receiving user explicitly confirms the transfer.
 - Only operate on the local network segment the device is already connected to.
-- Sanitize destination filenames and paths before writing any received file to disk (planned; see roadmap).
-- Verify integrity (checksum) of received files after transfer (planned; see roadmap).
+- Sanitize destination filenames and paths before writing any received file to disk.
+- Verify integrity (checksum) of received files after transfer.
 
 ## What this project will explicitly not do
 
@@ -38,20 +38,44 @@ clear the stored validated endpoint and disable probing.
 
 ## Manual peer networking contract
 
-Networking now includes a bounded manual peer connection probe. It accepts
+Networking includes a bounded manual peer connection probe. It accepts
 `ManualPeerEndpoint`, not raw string input from the UI, performs one bounded
 `TcpClient` connection attempt, and disposes the client immediately after the
 probe. The App can invoke it only from an explicit user click using the stored
-validated endpoint. It does not send files, start transfers, or perform receiver
-confirmation.
+validated endpoint. The probe does not send files, start transfers, or perform
+receiver confirmation.
+
+Networking also includes the first local manual peer transfer path. The sender
+requires both a validated `ManualPeerEndpoint` and an explicit
+`PreparedOutgoingTransferManifest`; there is no public send API that accepts raw
+UI text or sends without a prepared manifest. The receiver reads request
+metadata first and calls an explicit confirmation callback; the sender sends
+payloads only after the receiver accepts. Rejecting a request writes no files.
+
+The receiver validates file names (rejecting path separators, traversal
+segments, and Windows reserved device names such as `CON`/`NUL`/`COM1`), keeps
+destination writes inside the receiver directory, and refuses existing
+destination files instead of overwriting them. Each accepted payload is streamed
+into a private temporary file in the destination directory while its SHA-256 is
+computed, so a payload is never fully buffered in memory. A temp file is only
+promoted to its final, sanitized name after its declared size and checksum
+verify. For a multi-file transfer, promotion is all-or-nothing: if a later
+promotion fails, the final files this transfer already created are rolled back
+and the temp files are deleted on a best-effort basis, so a partial transfer
+never leaves final or corrupt files behind. Structurally readable but invalid
+requests (bad names, duplicates, oversize) receive a clean rejection status
+rather than a dropped connection, and failure reasons are generic and never
+include local paths. The current App UI is not wired to this transfer path yet:
+it does not listen, accept, send, or write transfer files.
 
 The manual connection path must not use DNS, must not scan, must not create
 retry storms, must not run background probing, and must not use broadcast or
 multicast.
 
 Validation alone must never start a connection or transfer. Receiver confirmation
-is still required before accepting any transfer, destination file paths and names
-must remain sanitized, and checksum verification remains required after transfer.
+is required before accepting any transfer, destination file paths and names must
+remain sanitized, and checksum verification is required before a received file is
+written by the current Networking path.
 
 ## Current selected-file preview
 

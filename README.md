@@ -5,9 +5,10 @@
 A safe, boring LAN-only file transfer app for trusted devices — no cloud, no SMB, no admin rights, no credentials.
 
 > **MVP status:** Early scaffold. Core validation, UI manual peer validation,
-> an explicit UI-triggered bounded manual peer probe, and a file picker preview
-> with send-readiness checks, outgoing draft review, and explicit checksum /
-> manifest preparation exist, but the UI does not transfer files yet.
+> an explicit UI-triggered bounded manual peer probe, file picker preview,
+> send-readiness checks, outgoing draft review, explicit checksum / manifest
+> preparation, and a local manual peer transfer path in Networking exist. The
+> App UI still does not send, listen, accept, or write transfer files.
 
 ## Safety
 
@@ -22,7 +23,7 @@ This project is designed to be boring on purpose. It intentionally avoids anythi
 - Local network only
 - Receiver confirmation required
 - User-selected files only
-- Planned: sanitized output paths and integrity check after transfer
+- Networking path validates destination names, prevents silent overwrite, and verifies checksums
 
 ## Planned MVP Features
 
@@ -46,20 +47,19 @@ What works now:
 - Explicit `Probe connection` UI action using the stored validated `ManualPeerEndpoint`
 - Bounded manual peer connection probe in Networking; probe-only, with no file send or transfer start
 - Explicit file picker preview in the UI; it shows selected file count, total size, file names, and file sizes only
-- Send readiness UI skeleton summarizing peer, selected-file, and transfer-not-implemented status
+- Send readiness UI skeleton summarizing peer, selected-file, and App-transfer-disabled status
 - Outgoing transfer draft/review skeleton using safe preview metadata only
 - Explicit checksum and manifest preparation for selected files; nothing is sent
+- Networking manual peer sender/receiver path with explicit receiver confirmation, reject-without-write behavior, checksum verification, and no silent overwrite
 - Receiver confirmation UI skeleton with disabled Accept/Reject controls
 
 Not implemented yet:
 
 - Real sending from the UI
-- Receiver confirmation flow wired to networking
+- Receiver confirmation flow wired into the App UI
 - LAN discovery
-- Manual peer file transfer
-- Checksum verification after real transfer
-- Sender/receiver checksum comparison
 - Real two-PC transfer test
+- Production readiness
 
 ## Non-Goals
 
@@ -108,8 +108,9 @@ See [docs/architecture.md](docs/architecture.md) for details.
 - **Batch 7A** — send readiness UI skeleton without transfer ✅
 - **Batch 8A** — outgoing transfer draft and receiver confirmation skeleton without transfer ✅
 - **Batch 9A** — explicit checksum and manifest preparation without sending ✅
-- **Batch 9 next** — manual peer transfer remains later; LAN discovery remains later
-- **Later** — two-PC manual test hardening after real transfer exists
+- **Batch 10A** — local manual peer transfer path in Networking with receiver confirmation ✅
+- **Batch 10 next** — App send/receive wiring remains later; LAN discovery remains later
+- **Later** — real two-PC manual test hardening after App transfer wiring exists
 
 ## Documentation
 

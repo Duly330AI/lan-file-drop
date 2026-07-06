@@ -44,7 +44,7 @@
             <Border Background="#33F2A900" BorderBrush="#F2A900" BorderThickness="1"
                     CornerRadius="6" Padding="12,10">
                 <TextBlock TextWrapping="Wrap"
-                           Text="Early MVP shell — transfers are not connected to the UI yet." />
+                           Text="Early MVP shell - manual transfer networking exists, but send/receive UI wiring remains guarded." />
             </Border>
         </StackPanel>
 
@@ -103,7 +103,7 @@
                         </Border>
                         <StackPanel Spacing="4" Margin="0,0,0,12">
                             <TextBlock Text="Send readiness" FontWeight="SemiBold" />
-                            <TextBlock Text="Ready checks only - nothing sent. Transfer not implemented yet."
+                            <TextBlock Text="Ready checks only - nothing sent. App send remains disabled until the manual transfer UI is wired."
                                        Classes="muted"
                                        TextWrapping="Wrap" />
                             <TextBlock x:Name="ReadinessPeerText"
@@ -133,7 +133,7 @@
                                     IsEnabled="False"
                                     Click="OnPrepareManifestClick" />
                             <Button x:Name="SendButton"
-                                    Content="Send (Coming later)"
+                                    Content="Send (App wire-up later)"
                                     IsEnabled="False" />
                         </StackPanel>
                         <Border x:Name="OutgoingDraftPanel"
@@ -210,10 +210,10 @@
                             <StackPanel Spacing="8">
                                 <TextBlock Classes="muted"
                                            TextWrapping="Wrap"
-                                           Text="No incoming transfer is active. Receiver confirmation UI is planned here but is not wired to networking." />
+                                           Text="No incoming transfer is active. Networking requires receiver confirmation before writing, but this UI panel is not wired yet." />
                                 <TextBlock Classes="muted"
                                            TextWrapping="Wrap"
-                                           Text="Accept/Reject are disabled; this skeleton does not listen, accept, write files, or start transfer." />
+                                           Text="Accept/Reject are disabled; this skeleton does not listen, accept, write files, or start transfer from the App." />
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <Button Content="Accept" IsEnabled="False" />
                                     <Button Content="Reject" IsEnabled="False" />

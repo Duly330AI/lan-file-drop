@@ -33,10 +33,11 @@ Kept dependency-free so it can be unit tested in isolation and reused unchanged 
 
 Everything that touches the network:
 
-- Local device discovery (manual IP first, LAN broadcast later)
-- Sending/receiving the transfer protocol over TCP
+- Manual peer TCP probe and transfer path from validated endpoint values
+- Sending/receiving the transfer protocol over TCP with explicit receiver confirmation
 - Translating wire data into/out of Core's domain models
 - Manual peer probe code consumes only validated endpoint values from Core, not raw UI strings
+- LAN discovery remains unimplemented
 
 Depends on Core, but Core never depends back on Networking.
 
@@ -49,10 +50,11 @@ The Avalonia desktop shell:
 - Wires Core and Networking together
 - Contains no business logic of its own — it orchestrates calls into Core and Networking
 - Displays manual peer validation state and can invoke the bounded Networking
-  probe from a stored validated endpoint; no manual peer transfer flow exists
-- Can preview explicitly selected file names and sizes in App state only; no
-  file content reading, checksum reading, sending, or receiver-confirmed
-  transfer flow exists yet
+  probe from a stored validated endpoint; no App manual peer transfer flow
+  exists yet
+- Can preview explicitly selected file names and sizes in App state only;
+  selection itself does not read file contents, compute checksums, send, or
+  start a receiver-confirmed transfer
 - Displays App-level send readiness from existing UI state only; no transfer
   orchestration exists yet
 - Can create and display an outgoing transfer draft from Core preview metadata;
@@ -78,10 +80,20 @@ Core validates `ManualPeerEndpoint`, the App displays the validation result, and
 Networking can perform a bounded probe from a validated endpoint. The App can
 invoke that probe only from an explicit user click, using the stored validated
 `ManualPeerEndpoint` rather than raw UI text. The probe sends no files, starts
-no transfer, performs no receiver confirmation, and no manual peer transfer flow
-is implemented. Future networking implementation must continue to accept a
-validated endpoint value or equivalent contract object, not raw text from the
-UI.
+no transfer, and performs no receiver confirmation.
+
+Networking now also contains a local manual peer transfer path. The sender
+requires a validated `ManualPeerEndpoint`, an explicit
+`PreparedOutgoingTransferManifest`, and matching outgoing file streams; it
+streams each payload from disk in bounded chunks rather than buffering whole
+files. The receiver exposes request metadata through an explicit confirmation
+callback and does not read payload frames or write files before acceptance.
+After acceptance it streams each payload into a private temporary file while
+hashing it, verifies size and SHA-256, and only then promotes the temp file to
+its final name; multi-file promotion is all-or-nothing with best-effort rollback
+and temp cleanup. The App is not wired to this path yet and still does not send,
+listen, accept, or write transfer files. Future UI wiring must continue to pass
+validated endpoint and prepared manifest objects, not raw UI text.
 
 ## Selected File Preview Boundary
 
@@ -114,8 +126,8 @@ The App can explicitly read selected file streams after the user clicks
 `Prepare manifest`. It uses Core checksum logic to calculate SHA-256 values and
 Core prepared-manifest models to store safe metadata. Core receives safe file
 names, optional sizes, and `FileChecksum` values only; it never receives
-Avalonia storage handles, full local paths, or file streams. Networking remains
-untouched and no transfer starts.
+Avalonia storage handles, full local paths, or file streams. Preparing a
+manifest does not call Networking and no transfer starts.
 
 See [manual-peer-connection-plan.md](manual-peer-connection-plan.md) for the
 current safety contract for manual peer probing and future connection work.

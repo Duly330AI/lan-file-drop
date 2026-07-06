@@ -354,7 +354,7 @@ public partial class MainWindow : Window
                 ? "Manifest not prepared."
                 : "Manifest prepared with SHA-256 checksums.";
         ReadinessTransferText.Text =
-            $"Transfer: {draftStatus} {manifestStatus} Transfer not implemented yet; Send remains disabled. Nothing sent.";
+            $"Transfer: {draftStatus} {manifestStatus} App send wire-up is not enabled; Send remains disabled. Nothing sent.";
     }
 
     private void ClearOutgoingDraft()
@@ -385,7 +385,7 @@ public partial class MainWindow : Window
             $"Files: {GetFileCountText(_outgoingTransferDraft.FileCount)}, total known size {GetDraftTotalSizeText(_outgoingTransferDraft)}.";
         OutgoingDraftManifestText.Text = GetManifestStatusText();
         OutgoingDraftSafetyText.Text =
-            "Receiver confirmation required later. Not sent; transfer not implemented.";
+            "Networking sender requires the prepared manifest and receiver confirmation. App send wire-up is not enabled.";
     }
 
     private OutgoingTransferDraft CreateOutgoingDraft(ManualPeerEndpoint endpoint)
