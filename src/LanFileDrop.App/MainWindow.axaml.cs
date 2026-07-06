@@ -16,6 +16,7 @@ public partial class MainWindow : Window
     private readonly List<SelectedFilePreview> _selectedFiles = [];
     private ManualPeerEndpoint? _validatedManualPeerEndpoint;
     private ManualPeerConnectionProbeStatus? _lastManualPeerProbeStatus;
+    private OutgoingTransferDraft? _outgoingTransferDraft;
 
     public MainWindow()
     {
@@ -36,6 +37,7 @@ public partial class MainWindow : Window
             if (storageProvider is null || !storageProvider.CanOpen)
             {
                 _selectedFiles.Clear();
+                ClearOutgoingDraft();
                 UpdateSelectedFilesPreview("File picker is not available. No files selected and no files sent.");
                 return;
             }
@@ -49,6 +51,7 @@ public partial class MainWindow : Window
             if (files.Count == 0)
             {
                 _selectedFiles.Clear();
+                ClearOutgoingDraft();
                 UpdateSelectedFilesPreview("File selection cancelled. No files selected and no files sent.");
                 return;
             }
@@ -62,11 +65,13 @@ public partial class MainWindow : Window
 
             _selectedFiles.Clear();
             _selectedFiles.AddRange(selectedFiles);
+            ClearOutgoingDraft();
             UpdateSelectedFilesPreview($"{GetFileCountText(_selectedFiles.Count)} selected for preview only. Nothing sent.");
         }
         catch (Exception)
         {
             _selectedFiles.Clear();
+            ClearOutgoingDraft();
             UpdateSelectedFilesPreview("File selection failed. No files selected and no files sent.");
         }
         finally
@@ -79,7 +84,43 @@ public partial class MainWindow : Window
     private void OnClearSelectionClick(object? sender, RoutedEventArgs e)
     {
         _selectedFiles.Clear();
+        ClearOutgoingDraft();
         UpdateSelectedFilesPreview("Selection cleared. No files selected and no files sent.");
+    }
+
+    private void OnPrepareTransferDraftClick(object? sender, RoutedEventArgs e)
+    {
+        var endpoint = _validatedManualPeerEndpoint;
+        if (endpoint is null || _selectedFiles.Count == 0)
+        {
+            ClearOutgoingDraft();
+            SelectedFilesStatusText.Text = "Validate a peer and select files before preparing a draft. Nothing sent.";
+            UpdateSendReadiness();
+            return;
+        }
+
+        try
+        {
+            var draftFiles = _selectedFiles.Select(file =>
+                OutgoingTransferDraftFile.Create(file.Name, file.SizeBytes));
+
+            _outgoingTransferDraft = OutgoingTransferDraft.Create(endpoint.Display, draftFiles);
+            UpdateOutgoingDraftDisplay();
+            SelectedFilesStatusText.Text = "Transfer draft prepared for review only. Nothing sent.";
+        }
+        catch (Exception)
+        {
+            ClearOutgoingDraft();
+            SelectedFilesStatusText.Text = "Could not prepare transfer draft from current preview. Nothing sent.";
+        }
+
+        UpdateSendReadiness();
+    }
+
+    private void OnClearOutgoingDraftClick(object? sender, RoutedEventArgs e)
+    {
+        ClearOutgoingDraft();
+        SelectedFilesStatusText.Text = "Transfer draft cleared. File preview unchanged. Nothing sent.";
     }
 
     private void OnValidatePeerClick(object? sender, RoutedEventArgs e)
@@ -90,6 +131,7 @@ public partial class MainWindow : Window
 
             _validatedManualPeerEndpoint = endpoint;
             _lastManualPeerProbeStatus = null;
+            ClearOutgoingDraft();
             ManualPeerStatusText.Text = $"Validated peer: {display}";
             PeerPlaceholderText.IsVisible = false;
             ValidatedManualPeerText.IsVisible = true;
@@ -154,6 +196,7 @@ public partial class MainWindow : Window
     {
         _validatedManualPeerEndpoint = null;
         _lastManualPeerProbeStatus = null;
+        ClearOutgoingDraft();
         ProbeConnectionButton.IsEnabled = false;
         PeerPlaceholderText.IsVisible = true;
         ValidatedManualPeerText.IsVisible = false;
@@ -219,11 +262,52 @@ public partial class MainWindow : Window
 
     private void UpdateSendReadiness()
     {
+        PrepareTransferDraftButton.IsEnabled = _validatedManualPeerEndpoint is not null && _selectedFiles.Count > 0;
+
         ReadinessPeerText.Text = GetPeerReadinessText();
         ReadinessFilesText.Text = _selectedFiles.Count == 0
             ? "Files: none selected."
             : $"Files: {GetFileCountText(_selectedFiles.Count)} selected, total size {GetTotalSizeText(_selectedFiles)}.";
-        ReadinessTransferText.Text = "Transfer: not implemented yet; Send remains disabled. Ready checks only. Nothing sent.";
+
+        var draftStatus = _outgoingTransferDraft is null
+            ? "No transfer draft prepared."
+            : "Transfer draft prepared for review only.";
+        ReadinessTransferText.Text =
+            $"Transfer: {draftStatus} Transfer not implemented yet; Send remains disabled. Ready checks only. Nothing sent.";
+    }
+
+    private void ClearOutgoingDraft()
+    {
+        _outgoingTransferDraft = null;
+        UpdateOutgoingDraftDisplay();
+        UpdateSendReadiness();
+    }
+
+    private void UpdateOutgoingDraftDisplay()
+    {
+        if (_outgoingTransferDraft is null)
+        {
+            OutgoingDraftPanel.IsVisible = false;
+            ClearOutgoingDraftButton.IsEnabled = false;
+            OutgoingDraftPeerText.Text = string.Empty;
+            OutgoingDraftFilesText.Text = string.Empty;
+            OutgoingDraftSafetyText.Text = string.Empty;
+            return;
+        }
+
+        OutgoingDraftPanel.IsVisible = true;
+        ClearOutgoingDraftButton.IsEnabled = true;
+        OutgoingDraftPeerText.Text = $"Target peer: {_outgoingTransferDraft.TargetPeerDisplay}";
+        OutgoingDraftFilesText.Text =
+            $"Files: {GetFileCountText(_outgoingTransferDraft.FileCount)}, total known size {GetDraftTotalSizeText(_outgoingTransferDraft)}.";
+        OutgoingDraftSafetyText.Text =
+            "Checksums not calculated yet. Receiver confirmation required later. Not sent; transfer not implemented.";
+    }
+
+    private static string GetDraftTotalSizeText(OutgoingTransferDraft draft)
+    {
+        var totalSizeText = FormatByteCount(draft.TotalKnownSizeBytes);
+        return draft.HasUnknownSizes ? $"{totalSizeText} known, plus unavailable sizes" : totalSizeText;
     }
 
     private string GetPeerReadinessText()

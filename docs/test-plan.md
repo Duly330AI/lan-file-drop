@@ -8,10 +8,14 @@ Automated tests never touch the real local network. No test may scan, broadcast 
 
 ### 1. Local unit tests (automated, current)
 
-- `LanFileDrop.Core.Tests` — domain models, transfer manifest, checksum/integrity logic, path/filename sanitization. No file system or network dependencies beyond what the logic under test itself requires.
+- `LanFileDrop.Core.Tests` — domain models, transfer manifest, outgoing draft
+  preview models, checksum/integrity logic, path/filename sanitization. No file
+  system or network dependencies beyond what the logic under test itself
+  requires.
 - `LanFileDrop.Networking.Tests` — protocol encoding/decoding and any logic that can be exercised without a live socket to another machine.
 
-Current state: scaffold smoke tests only (assert the projects reference each other and compile), to be replaced with real coverage starting in Batch 1.
+Current state: Core has focused unit coverage for domain models, validation,
+checksums, transfer metadata, and outgoing draft preview rules.
 
 ### 2. Local loopback transfer test (automated, later)
 

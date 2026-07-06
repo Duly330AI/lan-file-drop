@@ -1,13 +1,14 @@
 # UI Plan & Screenshot Plan
 
-Status: Batch 7A keeps the Avalonia UI shell intentionally **not wired to file
+Status: Batch 8A keeps the Avalonia UI shell intentionally **not wired to file
 transfer, DNS, LAN discovery, receiver confirmation, checksum reading, or
 filesystem send operations**. The manual peer input supports local validation,
 then an optional explicit `Probe connection` click. The probe is probe-only: it
 sends no files and starts no transfer. `Select files...` opens an explicit file
 picker and previews selected file names and sizes only. The Send files section
-also shows readiness checks for peer, files, and transfer status. Controls that
-would trigger real file transfer actions remain disabled.
+also shows readiness checks and can prepare an outgoing draft/review from safe
+preview metadata only. Controls that would trigger real file transfer actions
+remain disabled.
 
 ## Current shell sections
 
@@ -19,7 +20,11 @@ would trigger real file transfer actions remain disabled.
    local paths by default, read file contents, compute checksums, scan folders,
    or start transfer. The Send readiness area summarizes peer state, selected
    file state, and `Transfer not implemented yet` as ready checks only. `Send
-   (Coming later)` remains disabled.
+   (Coming later)` remains disabled. `Prepare transfer draft` creates a
+   review-only draft from the validated peer display and selected file metadata;
+   it shows checksums not calculated, receiver confirmation required later, not
+   sent, and transfer not implemented. Clearing or changing peer/files clears
+   the draft.
 4. **Peers** — manual peer input plus `Validate peer` and `Probe connection`
    buttons. `Validate peer` runs local endpoint validation only. A valid
    endpoint is stored as a `ManualPeerEndpoint`; text changes clear that stored
@@ -27,8 +32,9 @@ would trigger real file transfer actions remain disabled.
    valid endpoint exists, runs only from explicit user click, uses the stored
    validated endpoint rather than raw text, sends no files, starts no transfer,
    performs no receiver confirmation, and does not implement LAN discovery.
-5. **Incoming transfer** — placeholder confirmation card with disabled
-   `Accept` / `Reject` buttons.
+5. **Incoming transfer** — receiver confirmation skeleton with disabled
+   `Accept` / `Reject` buttons. It states no incoming transfer is active and
+   confirmation is not wired to networking.
 6. **Transfer log** — static sample / empty-state entries.
 
 ## Screenshots / GIFs to capture later (once wired)

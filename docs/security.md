@@ -68,6 +68,15 @@ transfer status. These checks are presentation-only. They do not read file
 contents, compute checksums, start transfer, send files, perform receiver
 confirmation, or add LAN discovery.
 
+## Current outgoing transfer draft
+
+The App can prepare a review-only outgoing transfer draft from safe preview
+metadata: validated peer display, selected file names, and selected file sizes
+when available. Drafts do not include full local paths, file handles, file
+contents, or checksums. Preparing or clearing a draft does not send files, start
+transfer, perform receiver confirmation, create a listener, or add LAN
+discovery.
+
 ## Reporting concerns
 
 As this is a portfolio project, please open a GitHub issue for any safety or security concern rather than a private disclosure — there is no production deployment or user data at stake.

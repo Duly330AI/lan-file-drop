@@ -22,6 +22,8 @@ Pure domain logic with no networking and no UI dependency:
 - File manifest and checksum/integrity logic
 - Path and filename sanitization rules
 - Manual peer endpoint validation for user-entered targets
+- Outgoing transfer draft model for preview/review state only; no transfer
+  execution or file handles
 
 Kept dependency-free so it can be unit tested in isolation and reused unchanged if a different UI or transport is added later.
 
@@ -51,6 +53,8 @@ The Avalonia desktop shell:
   transfer flow exists yet
 - Displays App-level send readiness from existing UI state only; no transfer
   orchestration exists yet
+- Can create and display an outgoing transfer draft from Core preview metadata;
+  this is review-only and does not call Networking or start transfer
 
 ### Tests
 
@@ -87,6 +91,15 @@ The App-level readiness display summarizes existing UI state: manual peer
 validation/probe result, selected-file preview count/size, and transfer status.
 It is presentation-only and does not orchestrate file sending, checksum reading,
 receiver confirmation, LAN discovery, or transfer startup.
+
+## Outgoing Draft Boundary
+
+Core owns the `OutgoingTransferDraft` and `OutgoingTransferDraftFile` preview
+models. They contain validated peer display text, safe file names, optional file
+sizes, counts, known-size totals, unknown-size state, and a created timestamp.
+They do not contain local paths, `IStorageFile` handles, checksums, file
+contents, or transfer execution state. The App uses these models only for a
+review skeleton; Networking is untouched.
 
 See [manual-peer-connection-plan.md](manual-peer-connection-plan.md) for the
 current safety contract for manual peer probing and future connection work.

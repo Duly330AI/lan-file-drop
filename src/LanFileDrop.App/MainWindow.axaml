@@ -124,10 +124,37 @@
                                     Content="Clear selection"
                                     IsEnabled="False"
                                     Click="OnClearSelectionClick" />
+                            <Button x:Name="PrepareTransferDraftButton"
+                                    Content="Prepare transfer draft"
+                                    IsEnabled="False"
+                                    Click="OnPrepareTransferDraftClick" />
                             <Button x:Name="SendButton"
                                     Content="Send (Coming later)"
                                     IsEnabled="False" />
                         </StackPanel>
+                        <Border x:Name="OutgoingDraftPanel"
+                                IsVisible="False"
+                                BorderBrush="{DynamicResource ThemeBorderMidBrush}"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Padding="12"
+                                Margin="0,12,0,0">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Outgoing transfer draft" FontWeight="SemiBold" />
+                                <TextBlock x:Name="OutgoingDraftPeerText"
+                                           TextWrapping="Wrap" />
+                                <TextBlock x:Name="OutgoingDraftFilesText"
+                                           TextWrapping="Wrap" />
+                                <TextBlock x:Name="OutgoingDraftSafetyText"
+                                           Classes="muted"
+                                           TextWrapping="Wrap" />
+                                <Button x:Name="ClearOutgoingDraftButton"
+                                        Content="Clear draft"
+                                        IsEnabled="False"
+                                        HorizontalAlignment="Left"
+                                        Click="OnClearOutgoingDraftClick" />
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </Border>
 
@@ -175,7 +202,11 @@
                                 CornerRadius="6" Padding="16">
                             <StackPanel Spacing="8">
                                 <TextBlock Classes="muted"
-                                           Text="No incoming transfer. Confirmation card will appear here." />
+                                           TextWrapping="Wrap"
+                                           Text="No incoming transfer is active. Receiver confirmation UI is planned here but is not wired to networking." />
+                                <TextBlock Classes="muted"
+                                           TextWrapping="Wrap"
+                                           Text="Accept/Reject are disabled; this skeleton does not listen, accept, write files, or start transfer." />
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <Button Content="Accept" IsEnabled="False" />
                                     <Button Content="Reject" IsEnabled="False" />
