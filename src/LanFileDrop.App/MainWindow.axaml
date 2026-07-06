@@ -84,16 +84,30 @@
                     <StackPanel>
                         <TextBlock Classes="sectionTitle" Text="Send files" />
                         <Border Classes="dropzone">
-                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="4">
-                                <TextBlock HorizontalAlignment="Center"
-                                           Text="Drag &amp; drop files here" FontWeight="SemiBold" />
-                                <TextBlock HorizontalAlignment="Center" Classes="muted"
-                                           Text="Visual placeholder — files are not read yet." />
+                            <StackPanel VerticalAlignment="Center" Spacing="8">
+                                <TextBlock x:Name="SelectedFilesSummaryText"
+                                           HorizontalAlignment="Center"
+                                           Text="No files selected"
+                                           FontWeight="SemiBold" />
+                                <TextBlock x:Name="SelectedFilesStatusText"
+                                           HorizontalAlignment="Center"
+                                           Classes="muted"
+                                           TextWrapping="Wrap"
+                                           Text="Select files to preview names and sizes. Nothing is sent yet." />
+                                <ScrollViewer MaxHeight="160"
+                                              HorizontalScrollBarVisibility="Disabled"
+                                              VerticalScrollBarVisibility="Auto">
+                                    <StackPanel x:Name="SelectedFilesPreviewPanel" Spacing="4" />
+                                </ScrollViewer>
                             </StackPanel>
                         </Border>
                         <StackPanel Orientation="Horizontal" Spacing="8">
-                            <Button Content="Select files…" IsEnabled="False" />
-                            <Button Content="Send (Coming later)" IsEnabled="False" />
+                            <Button x:Name="SelectFilesButton"
+                                    Content="Select files…"
+                                    Click="OnSelectFilesClick" />
+                            <Button x:Name="SendButton"
+                                    Content="Send (Coming later)"
+                                    IsEnabled="False" />
                         </StackPanel>
                     </StackPanel>
                 </Border>

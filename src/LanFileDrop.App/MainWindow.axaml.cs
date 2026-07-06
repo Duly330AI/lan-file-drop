@@ -1,5 +1,8 @@
+using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
+using Avalonia.Platform.Storage;
 using LanFileDrop.Core.Models;
 using LanFileDrop.Networking;
 
@@ -7,11 +10,66 @@ namespace LanFileDrop.App;
 
 public partial class MainWindow : Window
 {
+    private readonly List<SelectedFilePreview> _selectedFiles = [];
     private ManualPeerEndpoint? _validatedManualPeerEndpoint;
 
     public MainWindow()
     {
         InitializeComponent();
+        UpdateSelectedFilesPreview("No files selected. Select files to preview names and sizes. Nothing is sent yet.");
+    }
+
+    private async void OnSelectFilesClick(object? sender, RoutedEventArgs e)
+    {
+        SelectFilesButton.IsEnabled = false;
+        SelectedFilesStatusText.Text = "Opening file picker. Preview only; no files are sent.";
+
+        IReadOnlyList<IStorageFile> files = [];
+
+        try
+        {
+            var storageProvider = TopLevel.GetTopLevel(this)?.StorageProvider;
+            if (storageProvider is null || !storageProvider.CanOpen)
+            {
+                _selectedFiles.Clear();
+                UpdateSelectedFilesPreview("File picker is not available. No files were selected or sent.");
+                return;
+            }
+
+            files = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = "Select files to preview",
+                AllowMultiple = true,
+            });
+
+            if (files.Count == 0)
+            {
+                _selectedFiles.Clear();
+                UpdateSelectedFilesPreview("File selection cancelled. No files selected and no files sent.");
+                return;
+            }
+
+            var selectedFiles = new List<SelectedFilePreview>(files.Count);
+            foreach (var file in files)
+            {
+                var properties = await file.GetBasicPropertiesAsync();
+                selectedFiles.Add(new SelectedFilePreview(GetDisplayFileName(file.Name), properties.Size));
+            }
+
+            _selectedFiles.Clear();
+            _selectedFiles.AddRange(selectedFiles);
+            UpdateSelectedFilesPreview($"{GetFileCountText(_selectedFiles.Count)} selected for preview only. Nothing has been sent.");
+        }
+        catch (Exception)
+        {
+            _selectedFiles.Clear();
+            UpdateSelectedFilesPreview("File selection failed. No files were selected or sent.");
+        }
+        finally
+        {
+            DisposePickedFiles(files);
+            SelectFilesButton.IsEnabled = true;
+        }
     }
 
     private void OnValidatePeerClick(object? sender, RoutedEventArgs e)
@@ -87,4 +145,110 @@ public partial class MainWindow : Window
             ManualPeerConnectionProbeStatus.Cancelled => "Probe cancelled — no files sent",
             _ => "Probe finished — no files sent",
         };
+
+    private void UpdateSelectedFilesPreview(string statusText)
+    {
+        SelectedFilesPreviewPanel.Children.Clear();
+
+        if (_selectedFiles.Count == 0)
+        {
+            SelectedFilesSummaryText.Text = "No files selected";
+            SelectedFilesStatusText.Text = statusText;
+            return;
+        }
+
+        SelectedFilesSummaryText.Text =
+            $"{GetFileCountText(_selectedFiles.Count)} selected. Total size: {GetTotalSizeText(_selectedFiles)}";
+        SelectedFilesStatusText.Text = statusText;
+
+        foreach (var previewItem in _selectedFiles)
+        {
+            var itemText = new TextBlock
+            {
+                Text = $"{previewItem.Name} ({FormatFileSize(previewItem.SizeBytes)})",
+                TextWrapping = TextWrapping.Wrap,
+            };
+            itemText.Classes.Add("muted");
+            SelectedFilesPreviewPanel.Children.Add(itemText);
+        }
+    }
+
+    private static string GetDisplayFileName(string fileName)
+    {
+        var displayName = string.IsNullOrWhiteSpace(fileName)
+            ? "Unnamed file"
+            : fileName.Trim().TrimEnd('/', '\\');
+        var slashIndex = displayName.LastIndexOf('/');
+        var backslashIndex = displayName.LastIndexOf('\\');
+        var separatorIndex = Math.Max(slashIndex, backslashIndex);
+
+        if (separatorIndex >= 0)
+        {
+            displayName = displayName[(separatorIndex + 1)..];
+        }
+
+        if (string.IsNullOrWhiteSpace(displayName))
+        {
+            return "Unnamed file";
+        }
+
+        return displayName.Replace('\r', ' ').Replace('\n', ' ');
+    }
+
+    private static void DisposePickedFiles(IEnumerable<IStorageFile> files)
+    {
+        foreach (var file in files)
+        {
+            try
+            {
+                file.Dispose();
+            }
+            catch (Exception)
+            {
+                // Picker handles are not retained; cleanup failure must not start a transfer or crash the UI.
+            }
+        }
+    }
+
+    private static string GetFileCountText(int count) => count == 1 ? "1 file" : $"{count} files";
+
+    private static string GetTotalSizeText(IEnumerable<SelectedFilePreview> selectedFiles)
+    {
+        decimal totalSizeBytes = 0;
+        var hasUnknownSize = false;
+
+        foreach (var previewItem in selectedFiles)
+        {
+            if (previewItem.SizeBytes is { } sizeBytes)
+            {
+                totalSizeBytes += sizeBytes;
+                continue;
+            }
+
+            hasUnknownSize = true;
+        }
+
+        var totalSizeText = FormatByteCount(totalSizeBytes);
+        return hasUnknownSize ? $"{totalSizeText} known, plus unavailable sizes" : totalSizeText;
+    }
+
+    private static string FormatFileSize(ulong? sizeBytes) =>
+        sizeBytes is { } knownSize ? FormatByteCount(knownSize) : "size unavailable";
+
+    private static string FormatByteCount(decimal sizeBytes)
+    {
+        var unitIndex = 0;
+        string[] units = ["B", "KB", "MB", "GB", "TB"];
+
+        while (sizeBytes >= 1024 && unitIndex < units.Length - 1)
+        {
+            sizeBytes /= 1024;
+            unitIndex++;
+        }
+
+        var format = unitIndex == 0 ? "0" : "0.#";
+        return $"{sizeBytes.ToString(format, CultureInfo.InvariantCulture)} {units[unitIndex]}";
+    }
+
+    private sealed record SelectedFilePreview(string Name, ulong? SizeBytes);
 }
