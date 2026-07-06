@@ -1,9 +1,9 @@
 # UI Plan & Screenshot Plan
 
-Status: Batch 4 delivers a **static Avalonia UI shell**. It presents the product
-layout but is intentionally **not wired to any transfer, socket, or filesystem
-operation**. Every interactive control that could trigger a real action is
-disabled and labelled.
+Status: Batch 5B keeps the Avalonia UI shell intentionally **not wired to any
+transfer, socket, DNS, or filesystem operation**. The manual peer input is now
+enabled for local validation only; it does not connect to another device.
+Controls that would trigger real file or network actions remain disabled.
 
 ## Current shell sections
 
@@ -11,8 +11,9 @@ disabled and labelled.
 2. **Local device** — placeholder display name and `Not connected · UI shell only` status.
 3. **Send files** — drag & drop placeholder zone (visual only, no file reads),
    disabled `Select files…` and `Send (Coming later)` buttons.
-4. **Peers** — empty peer list placeholder; manual IP input disabled and labelled
-   `Coming in Batch 5`.
+4. **Peers** — manual peer input plus `Validate peer` button. The button runs
+   local endpoint validation only. A valid endpoint is displayed as
+   `Validated only — not connected`; no LAN discovery or connection is attempted.
 5. **Incoming transfer** — placeholder confirmation card with disabled
    `Accept` / `Reject` buttons.
 6. **Transfer log** — static sample / empty-state entries.
@@ -21,7 +22,8 @@ disabled and labelled.
 
 - Full window at startup showing the safety banner and all sections.
 - Send section with real selected files listed (after Batch with file picker).
-- Peers section showing a discovered or manually added peer (Batch 5+).
+- Peers section showing a validation-only manual peer with neutral placeholder
+  values. Do not show real private IPs, MAC addresses, or hostnames.
 - Incoming transfer confirmation card in its active (accept/reject) state.
 - Short GIF of a full loopback/LAN transfer with the transfer log updating live.
 

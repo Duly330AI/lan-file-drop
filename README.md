@@ -4,7 +4,8 @@
 
 A safe, boring LAN-only file transfer app for trusted devices — no cloud, no SMB, no admin rights, no credentials.
 
-> **MVP status:** Early scaffold / not functional yet.
+> **MVP status:** Early scaffold. Core validation and UI-only manual peer
+> validation exist, but the UI does not connect or transfer files yet.
 
 ## Safety
 
@@ -29,6 +30,25 @@ This project is designed to be boring on purpose. It intentionally avoids anythi
 - Transfer the file(s) over a plain local network connection
 - Verify integrity of received files (checksum) after transfer completes
 - Save received files into a dedicated, sanitized output folder
+
+## Current MVP Status
+
+What works now:
+
+- Core domain models for transfer requests, peers, and manifests
+- Checksum and transfer manifest logic
+- Local loopback transfer prototype
+- Static Avalonia UI shell
+- Manual peer endpoint validation in Core
+- Manual peer input validation in the UI, labelled as validation-only and not connected
+
+Not implemented yet:
+
+- Real file picker or sending from the UI
+- Receiver confirmation flow wired to networking
+- LAN discovery
+- Manual peer connection
+- Real two-PC transfer test
 
 ## Non-Goals
 
@@ -63,8 +83,11 @@ See [docs/architecture.md](docs/architecture.md) for details.
 - **Batch 1** — core domain models + tests ✅
 - **Batch 2** — transfer manifest / checksum logic + tests ✅
 - **Batch 3** — local loopback transfer prototype ✅
-- **Batch 4** — minimal Avalonia UI shell ✅ *(this batch)*
-- **Batch 5** — LAN discovery / manual IP fallback
+- **Batch 4** — minimal Avalonia UI shell ✅
+- **Batch 5A** — manual peer endpoint validation in Core ✅
+- **Batch 5B** — manual peer validation wired into the Avalonia UI ✅
+- **Batch 5C** — documentation update for manual peer validation ✅
+- **Batch 5 next** — manual peer connection and/or LAN discovery
 - **Batch 6** — two-PC manual test hardening
 
 ## Documentation

@@ -28,6 +28,13 @@ LAN File Drop is deliberately scoped to be a low-risk, "boring" application. Thi
 
 The first time the app opens a network listener, Windows Defender Firewall will likely prompt the user to allow the app on private/public networks. This is expected, standard behavior for any LAN-facing app and is not something the app configures itself — the user retains full control via the standard Windows prompt.
 
+## Current manual peer validation
+
+Manual peer endpoint validation is local input parsing only. It does not perform
+DNS lookup, LAN discovery, socket creation, file access, or transfer startup.
+The UI labels a valid manual peer as validation-only until connection behavior
+is explicitly implemented in a later batch.
+
 ## Reporting concerns
 
 As this is a portfolio project, please open a GitHub issue for any safety or security concern rather than a private disclosure — there is no production deployment or user data at stake.
