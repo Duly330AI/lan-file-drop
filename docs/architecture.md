@@ -32,7 +32,7 @@ Everything that touches the network:
 - Local device discovery (manual IP first, LAN broadcast later)
 - Sending/receiving the transfer protocol over TCP
 - Translating wire data into/out of Core's domain models
-- Future manual peer connection code may consume only validated endpoint values from Core, not raw UI strings
+- Manual peer probe code consumes only validated endpoint values from Core, not raw UI strings
 
 Depends on Core, but Core never depends back on Networking.
 
@@ -43,7 +43,7 @@ The Avalonia desktop shell:
 - File picker, transfer progress, and the mandatory receiver-confirmation dialog
 - Wires Core and Networking together
 - Contains no business logic of its own — it orchestrates calls into Core and Networking
-- Displays manual peer validation state; it does not currently open a real manual connection
+- Displays manual peer validation state; it does not currently invoke the Networking probe
 
 ### Tests
 
@@ -58,10 +58,11 @@ Keeping Core free of networking and UI concerns means the transfer/integrity log
 
 ## Manual Peer Boundary
 
-The current manual peer path stops at validation. Core validates `ManualPeerEndpoint`,
-the App displays the validation result, and Networking does not yet consume it for
-a real connection. A future networking implementation must accept a validated
-endpoint value or equivalent contract object, not raw text from the UI.
+Core validates `ManualPeerEndpoint`, the App displays the validation result, and
+Networking can now perform a bounded probe from a validated endpoint. The App
+does not invoke that probe yet, and no manual peer transfer flow is implemented.
+Future networking implementation must continue to accept a validated endpoint
+value or equivalent contract object, not raw text from the UI.
 
 See [manual-peer-connection-plan.md](manual-peer-connection-plan.md) for the
 planned safety contract before manual peer connection work begins.

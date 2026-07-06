@@ -1,6 +1,8 @@
 # Manual Peer Connection Plan
 
-Status: planning only. No real manual peer connection is implemented yet.
+Status: first bounded manual peer connection probe exists in Networking. It is
+not wired into the UI and does not send files, start transfers, perform receiver
+confirmation, or implement LAN discovery.
 
 ## Current boundary
 
@@ -12,13 +14,20 @@ Status: planning only. No real manual peer connection is implemented yet.
 - A validated peer remains validation-only until the user explicitly chooses a later connect or send action.
 - The UI must keep labelling validated peers as not connected until real connection behavior exists.
 
+## Implemented probe boundary
+
+- Networking probe code accepts `ManualPeerEndpoint`, not raw UI input.
+- The probe performs one bounded `TcpClient` connection attempt.
+- The probe closes/disposes the client immediately after the attempt.
+- No connection attempt happens from validation alone.
+- The App does not invoke the probe yet.
+
 ## Future connection rules
 
-- Networking code must accept `ManualPeerEndpoint` or an equivalent validated value object, not raw UI input.
+- Future transfer code must accept `ManualPeerEndpoint` or an equivalent validated value object, not raw UI input.
 - Connect attempts must use a bounded timeout.
 - No scanning, retry storms, or background probing.
 - No broadcast or multicast in the manual connection path.
-- No connection attempt happens from validation alone.
 - Receiver confirmation remains required before any transfer is accepted.
 - File paths and names must remain sanitized before any received file is written.
 - Checksums remain required after transfer.
