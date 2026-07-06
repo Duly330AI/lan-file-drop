@@ -40,11 +40,15 @@ Depends on Core, but Core never depends back on Networking.
 
 The Avalonia desktop shell:
 
-- File picker, transfer progress, and the mandatory receiver-confirmation dialog
+- File picker metadata preview, future transfer progress, and the mandatory
+  receiver-confirmation dialog
 - Wires Core and Networking together
 - Contains no business logic of its own — it orchestrates calls into Core and Networking
 - Displays manual peer validation state and can invoke the bounded Networking
   probe from a stored validated endpoint; no manual peer transfer flow exists
+- Can preview explicitly selected file names and sizes in App state only; no
+  file content reading, checksum reading, sending, or receiver-confirmed
+  transfer flow exists yet
 
 ### Tests
 
@@ -67,6 +71,13 @@ no transfer, performs no receiver confirmation, and no manual peer transfer flow
 is implemented. Future networking implementation must continue to accept a
 validated endpoint value or equivalent contract object, not raw text from the
 UI.
+
+## Selected File Preview Boundary
+
+The App may ask the platform file picker for user-selected files and keep a
+preview model containing file name and size only. Full local paths are not part
+of the preview state or default display. The current preview path does not read
+file contents, compute checksums, scan folders, send files, or start transfer.
 
 See [manual-peer-connection-plan.md](manual-peer-connection-plan.md) for the
 current safety contract for manual peer probing and future connection work.

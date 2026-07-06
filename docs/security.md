@@ -53,6 +53,14 @@ Validation alone must never start a connection or transfer. Receiver confirmatio
 is still required before accepting any transfer, destination file paths and names
 must remain sanitized, and checksum verification remains required after transfer.
 
+## Current selected-file preview
+
+The App has an explicit `Select files...` action that opens the platform file
+picker only after the user clicks it. The preview stores and displays selected
+file names and sizes only. It does not display full local paths by default, does
+not read file contents, does not compute checksums, does not scan folders, does
+not start a transfer, and does not send files. `Send` remains disabled.
+
 ## Reporting concerns
 
 As this is a portfolio project, please open a GitHub issue for any safety or security concern rather than a private disclosure — there is no production deployment or user data at stake.

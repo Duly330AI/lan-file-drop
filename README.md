@@ -5,8 +5,8 @@
 A safe, boring LAN-only file transfer app for trusted devices — no cloud, no SMB, no admin rights, no credentials.
 
 > **MVP status:** Early scaffold. Core validation, UI manual peer validation,
-> and an explicit UI-triggered bounded manual peer probe exist, but the UI does
-> not transfer files yet.
+> an explicit UI-triggered bounded manual peer probe, and a file picker preview
+> exist, but the UI does not transfer files yet.
 
 ## Safety
 
@@ -44,13 +44,15 @@ What works now:
 - Manual peer input validation in the UI, with text changes clearing the stored validated endpoint
 - Explicit `Probe connection` UI action using the stored validated `ManualPeerEndpoint`
 - Bounded manual peer connection probe in Networking; probe-only, with no file send or transfer start
+- Explicit file picker preview in the UI; it shows selected file count, total size, file names, and file sizes only
 
 Not implemented yet:
 
-- Real file picker or sending from the UI
+- Real sending from the UI
 - Receiver confirmation flow wired to networking
 - LAN discovery
 - Manual peer file transfer
+- Checksum reading for selected files
 - Real two-PC transfer test
 
 ## Non-Goals
@@ -94,8 +96,10 @@ See [docs/architecture.md](docs/architecture.md) for details.
 - **Batch 5E** — bounded manual peer connection probe in Networking ✅
 - **Batch 5F** — documentation update for manual peer probe status ✅
 - **Batch 5G** — explicit UI-triggered manual peer probe without transfer ✅
-- **Batch 5 next** — manual peer transfer remains later; LAN discovery remains later
-- **Batch 6** — two-PC manual test hardening
+- **Batch 6A** — file picker preview without sending ✅
+- **Batch 6B** — documentation update for file picker preview ✅
+- **Batch 6 next** — manual peer transfer remains later; LAN discovery remains later
+- **Later** — two-PC manual test hardening after real transfer exists
 
 ## Documentation
 
