@@ -52,17 +52,23 @@ loopback path without discovery:
 
 This smoke is manual and intentionally not a scripted UI test.
 
-### 4. Two-PC manual test (manual, later)
+### 4. Two-PC manual test (manual, performed)
 
-After the single-machine loopback flow has been reviewed, perform a deliberate
-manual test between two real Windows devices on the same LAN:
+A deliberate manual smoke test between two real Windows devices on the same LAN
+has been performed and is recorded in [manual-smoke.md](manual-smoke.md):
 
-- Confirm discovery or manual-IP connection succeeds.
-- Confirm the receiving side shows the confirmation prompt and no file is written before acceptance.
-- Confirm the transferred file's checksum matches the source.
-- Confirm rejecting the prompt results in no file being written.
+- Manual-IP connection to the receiver on an explicit port succeeded (no
+  discovery exists or was used).
+- The receiving side showed the confirmation prompt and no file was written
+  before explicit acceptance.
+- After acceptance, the file was written to the selected receive folder and the
+  receive completed successfully; the Networking path verifies the checksum
+  before promoting a received file.
 
-This is a manual, human-run test — it is not part of the automated test suite and is not scripted to run unattended.
+This was a manual, human-run happy-path smoke test — it is not part of the
+automated test suite and is not scripted to run unattended. An automated two-PC
+test remains explicitly out of scope. Reject and failure paths are covered by
+the automated loopback tests.
 
 ## Explicitly out of scope for tests
 

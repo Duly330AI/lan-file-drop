@@ -24,6 +24,15 @@ LAN File Drop is deliberately scoped to be a low-risk, "boring" application. Thi
 - **No WAN/internet transfer.** If a transfer would need to leave the local network, it is out of scope.
 - **No firewall or network configuration changes performed by the app itself** beyond what Windows' own "allow this app on private networks" prompt requires on first run.
 
+## Scope of current validation
+
+The controlled manual transfer flow has been validated in a manual two-PC smoke
+test on a real local network (see [manual-smoke.md](manual-smoke.md)). That is a
+happy-path smoke test, not a security assessment. The transfer runs over plain
+TCP without transport encryption and is intended only for trusted devices on a
+trusted local network; none of this document's guarantees extend to hostile
+networks, and no production-readiness claim is made.
+
 ## Expected first-run behavior
 
 The first time the app opens a network listener, Windows Defender Firewall will likely prompt the user to allow the app on private/public networks. This is expected, standard behavior for any LAN-facing app and is not something the app configures itself — the user retains full control via the standard Windows prompt.

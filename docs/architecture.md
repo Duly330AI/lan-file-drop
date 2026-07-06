@@ -5,7 +5,7 @@
 ```
 src/
   LanFileDrop.Core/          domain models, transfer manifest, checksum/integrity logic
-  LanFileDrop.Networking/    discovery and transport, depends on Core
+  LanFileDrop.Networking/    manual peer transport, depends on Core (LAN discovery unimplemented)
   LanFileDrop.App/           Avalonia desktop UI, depends on Core and Networking
 tests/
   LanFileDrop.Core.Tests/
@@ -99,7 +99,9 @@ its final name; multi-file promotion is all-or-nothing with best-effort rollback
 and temp cleanup. The App is now wired to this path in a controlled way: it
 passes validated endpoint and prepared manifest objects, not raw UI text, starts
 the receiver only from an explicit click, and requires receiver Accept before
-Networking writes final files. LAN discovery remains unimplemented.
+Networking writes final files. LAN discovery remains unimplemented. This wired
+path has been validated end-to-end in a manual two-PC smoke test
+(see [manual-smoke.md](manual-smoke.md)).
 
 The App receiver uses `IPAddress.Any` only in the explicit `Start receiver`
 path so a manually addressed LAN peer can reach the selected port. There is no

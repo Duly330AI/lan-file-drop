@@ -12,6 +12,11 @@ only when the validated peer, selected files, and prepared manifest still match.
 Receiving requires an explicit receive-folder selection, explicit one-shot
 receiver start, and explicit Accept before final files are written.
 
+The current UI is a technical MVP: functional and honest about state, but not
+consumer-polished. Layout, wording, progress feedback, and the transfer log are
+known polish areas for later batches. The flow itself has been validated in a
+manual two-PC smoke test (see [manual-smoke.md](manual-smoke.md)).
+
 ## Current shell sections
 
 1. **Safety banner** — always-visible status line plus the safety bullet list.
@@ -45,17 +50,27 @@ receiver start, and explicit Accept before final files are written.
    Incoming request metadata shows request id, file count, total size, safe file
    names, and checksum/manifest presence, never full paths. `Accept` / `Reject`
    are enabled only while a request is awaiting an explicit decision.
-6. **Transfer log** — static sample / empty-state entries.
+6. **Transfer log** — static sample / empty-state entries. Known polish item:
+   the log still shows the placeholder entry
+   `[sample] UI shell started — no transfers performed.` even after a real
+   transfer; it does not yet log live transfer events.
 
-## Screenshots / GIFs to capture later
+## Screenshots
 
-- Full window at startup showing the safety banner and all sections.
-- Send section with preview-only selected files listed. Use safe sample names;
-  do not show full local paths or real personal data.
-- Peers section showing a validation-only manual peer with neutral placeholder
-  values. Do not show real private IPs, MAC addresses, or hostnames.
-- Incoming transfer confirmation card in its active (accept/reject) state.
-- Short GIF of a full manual loopback transfer with the transfer log updating live.
+Redacted screenshots from the manual two-PC smoke test exist in
+[docs/media/](media/) and are embedded in the README:
+
+- `01-sender-ready-redacted.png` — sender ready with prepared manifest.
+- `02-receiver-pending-accept-redacted.png` — receiver waiting for Accept.
+- `03-receiver-completed-redacted.png` — receive completed after Accept.
+- `04-received-file-folder-redacted.png` — received file in destination folder.
+
+Only the `*-redacted.png` variants are referenced from published docs.
+
+Still to capture later:
+
+- Short GIF of a full manual transfer with a live-updating transfer log (after
+  the transfer log is wired to real events).
 
 ## Notes
 

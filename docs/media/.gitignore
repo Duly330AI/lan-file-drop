@@ -1,0 +1,3 @@
+# Keep original/manual screenshots local unless explicitly sanitized.
+*.png
+!*-redacted.png
