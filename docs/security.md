@@ -35,6 +35,18 @@ DNS lookup, LAN discovery, socket creation, file access, or transfer startup.
 The UI labels a valid manual peer as validation-only until connection behavior
 is explicitly implemented in a later batch.
 
+## Future manual peer networking contract
+
+Manual peer networking is not implemented yet. When it is added, the networking
+layer must accept `ManualPeerEndpoint` or an equivalent validated endpoint value,
+not raw string input from the UI. The manual connection path must use bounded
+connect timeouts, must not scan, must not create retry storms, must not run
+background probing, and must not use broadcast or multicast.
+
+Validation alone must never start a connection or transfer. Receiver confirmation
+is still required before accepting any transfer, destination file paths and names
+must remain sanitized, and checksum verification remains required after transfer.
+
 ## Reporting concerns
 
 As this is a portfolio project, please open a GitHub issue for any safety or security concern rather than a private disclosure — there is no production deployment or user data at stake.

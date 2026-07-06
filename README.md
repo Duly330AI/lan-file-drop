@@ -87,7 +87,8 @@ See [docs/architecture.md](docs/architecture.md) for details.
 - **Batch 5A** — manual peer endpoint validation in Core ✅
 - **Batch 5B** — manual peer validation wired into the Avalonia UI ✅
 - **Batch 5C** — documentation update for manual peer validation ✅
-- **Batch 5 next** — manual peer connection and/or LAN discovery
+- **Batch 5D** — manual peer connection plan and networking safety contract ✅
+- **Batch 5 next** — implement bounded manual peer connection path; LAN discovery remains later
 - **Batch 6** — two-PC manual test hardening
 
 ## Documentation
