@@ -1,5 +1,7 @@
 # LAN File Drop
 
+[![CI](https://github.com/Duly330AI/lan-file-drop/actions/workflows/ci.yml/badge.svg)](https://github.com/Duly330AI/lan-file-drop/actions/workflows/ci.yml)
+
 A safe, boring LAN-only file transfer app for trusted devices — no cloud, no SMB, no admin rights, no credentials.
 
 > **MVP status:** Early scaffold / not functional yet.
