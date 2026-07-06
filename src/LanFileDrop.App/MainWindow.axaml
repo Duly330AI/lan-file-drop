@@ -105,6 +105,10 @@
                             <Button x:Name="SelectFilesButton"
                                     Content="Select files…"
                                     Click="OnSelectFilesClick" />
+                            <Button x:Name="ClearSelectionButton"
+                                    Content="Clear selection"
+                                    IsEnabled="False"
+                                    Click="OnClearSelectionClick" />
                             <Button x:Name="SendButton"
                                     Content="Send (Coming later)"
                                     IsEnabled="False" />

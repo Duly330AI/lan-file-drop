@@ -10,13 +10,16 @@ namespace LanFileDrop.App;
 
 public partial class MainWindow : Window
 {
+    private const int MaxSelectedFilePreviewRows = 50;
+    private const int MaxDisplayFileNameLength = 80;
+
     private readonly List<SelectedFilePreview> _selectedFiles = [];
     private ManualPeerEndpoint? _validatedManualPeerEndpoint;
 
     public MainWindow()
     {
         InitializeComponent();
-        UpdateSelectedFilesPreview("No files selected. Select files to preview names and sizes. Nothing is sent yet.");
+        UpdateSelectedFilesPreview("No files selected. Nothing sent. Select files to preview names and sizes.");
     }
 
     private async void OnSelectFilesClick(object? sender, RoutedEventArgs e)
@@ -32,7 +35,7 @@ public partial class MainWindow : Window
             if (storageProvider is null || !storageProvider.CanOpen)
             {
                 _selectedFiles.Clear();
-                UpdateSelectedFilesPreview("File picker is not available. No files were selected or sent.");
+                UpdateSelectedFilesPreview("File picker is not available. No files selected and no files sent.");
                 return;
             }
 
@@ -58,18 +61,24 @@ public partial class MainWindow : Window
 
             _selectedFiles.Clear();
             _selectedFiles.AddRange(selectedFiles);
-            UpdateSelectedFilesPreview($"{GetFileCountText(_selectedFiles.Count)} selected for preview only. Nothing has been sent.");
+            UpdateSelectedFilesPreview($"{GetFileCountText(_selectedFiles.Count)} selected for preview only. Nothing sent.");
         }
         catch (Exception)
         {
             _selectedFiles.Clear();
-            UpdateSelectedFilesPreview("File selection failed. No files were selected or sent.");
+            UpdateSelectedFilesPreview("File selection failed. No files selected and no files sent.");
         }
         finally
         {
             DisposePickedFiles(files);
             SelectFilesButton.IsEnabled = true;
         }
+    }
+
+    private void OnClearSelectionClick(object? sender, RoutedEventArgs e)
+    {
+        _selectedFiles.Clear();
+        UpdateSelectedFilesPreview("Selection cleared. No files selected and no files sent.");
     }
 
     private void OnValidatePeerClick(object? sender, RoutedEventArgs e)
@@ -154,15 +163,19 @@ public partial class MainWindow : Window
         {
             SelectedFilesSummaryText.Text = "No files selected";
             SelectedFilesStatusText.Text = statusText;
+            ClearSelectionButton.IsEnabled = false;
             return;
         }
 
+        ClearSelectionButton.IsEnabled = true;
         SelectedFilesSummaryText.Text =
             $"{GetFileCountText(_selectedFiles.Count)} selected. Total size: {GetTotalSizeText(_selectedFiles)}";
         SelectedFilesStatusText.Text = statusText;
 
-        foreach (var previewItem in _selectedFiles)
+        var shownRowCount = Math.Min(_selectedFiles.Count, MaxSelectedFilePreviewRows);
+        for (var index = 0; index < shownRowCount; index++)
         {
+            var previewItem = _selectedFiles[index];
             var itemText = new TextBlock
             {
                 Text = $"{previewItem.Name} ({FormatFileSize(previewItem.SizeBytes)})",
@@ -170,6 +183,18 @@ public partial class MainWindow : Window
             };
             itemText.Classes.Add("muted");
             SelectedFilesPreviewPanel.Children.Add(itemText);
+        }
+
+        var hiddenRowCount = _selectedFiles.Count - shownRowCount;
+        if (hiddenRowCount > 0)
+        {
+            var summaryText = new TextBlock
+            {
+                Text = $"... and {hiddenRowCount} more files not shown",
+                TextWrapping = TextWrapping.Wrap,
+            };
+            summaryText.Classes.Add("muted");
+            SelectedFilesPreviewPanel.Children.Add(summaryText);
         }
     }
 
@@ -192,7 +217,29 @@ public partial class MainWindow : Window
             return "Unnamed file";
         }
 
-        return displayName.Replace('\r', ' ').Replace('\n', ' ');
+        displayName = displayName.Replace('\r', ' ').Replace('\n', ' ');
+        return ShortenDisplayFileName(displayName);
+    }
+
+    private static string ShortenDisplayFileName(string displayName)
+    {
+        if (displayName.Length <= MaxDisplayFileNameLength)
+        {
+            return displayName;
+        }
+
+        var dotIndex = displayName.LastIndexOf('.');
+        if (dotIndex > 0 && dotIndex < displayName.Length - 1)
+        {
+            var extension = displayName[dotIndex..];
+            if (extension.Length <= 12 && extension.Length + 8 < MaxDisplayFileNameLength)
+            {
+                var prefixLength = MaxDisplayFileNameLength - extension.Length - 3;
+                return $"{displayName[..prefixLength]}...{extension}";
+            }
+        }
+
+        return $"{displayName[..(MaxDisplayFileNameLength - 3)]}...";
     }
 
     private static void DisposePickedFiles(IEnumerable<IStorageFile> files)
